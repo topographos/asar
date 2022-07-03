@@ -1,2 +1,5 @@
+title: Re- imagined Fortnight
 theme: jekyll-theme-minimal
-title: ASAR
+plugins:
+  - jekyll-remote-theme
+
