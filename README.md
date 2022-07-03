@@ -1,2 +1,1 @@
-# asar
-Archaeological Spatial Analysis in R
+# Archaeological Spatial Analysis in R
