@@ -1,5 +1,4 @@
 logo: hex-ASAR.png
-title: [The title of your site]
 theme: jekyll-theme-minimal
 plugins:
   - jekyll-remote-theme
