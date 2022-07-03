@@ -1,6 +1,6 @@
 logo: hex-ASAR.png
 theme: jekyll-theme-minimal
-color-scheme: auto
+color-scheme: light
 plugins:
   - jekyll-remote-theme
 remote_theme: BDHU/minimalist
