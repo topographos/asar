@@ -1,7 +1,6 @@
-title: [The title of your site]
-description: [A short description of your site's purpose]
-theme: jekyll-theme-minimal
 logo: hex-ASAR.png
+title: [The title of your site]
+theme: jekyll-theme-minimal
 plugins:
   - jekyll-remote-theme
 
