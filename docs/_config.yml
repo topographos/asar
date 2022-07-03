@@ -1,5 +1,9 @@
 logo: hex-ASAR.png
 theme: jekyll-theme-minimal
+color-scheme: auto
 plugins:
   - jekyll-remote-theme
 remote_theme: BDHU/minimalist
+sidebar:
+  - name: GitHub
+    icon: <i class="fa-brands fa-github"></i>
