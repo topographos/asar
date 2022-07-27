@@ -1,4 +1,6 @@
-## Archaeological Spatial Analysis in R
+## Archaeological Spatial Analysis in R - ARCH0000
+
+tutor: Michal Michalski 
 
 You can use the [editor on GitHub](https://github.com/topographos/asar/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
 
