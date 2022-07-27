@@ -1,6 +1,6 @@
 ## Archaeological Spatial Analysis in R - ARCH0000
 
-tutor: Michal Michalski ([michal.m.michalski\@durham.ac.uk](mailto:michal.m.michalski@durham.ac.uk){.email})
+tutor: Michal Michalski 
 
 ### Learning outcomes
 
@@ -17,6 +17,12 @@ On successful completion of the course participants will be able to:
 -   Apply the tools and methods to their own projects
 
 ### Timetable
+
+|   |   |   |   |   |
+|---|---|---|---|---|
+|   |   |   |   |   |
+|   |   |   |   |   |
+|   |   |   |   |   |
 
 +---------------+-------------+-------------+-------------------------------+
 | Dates         | Hours       | Location    | Topic                         |
