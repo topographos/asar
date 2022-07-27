@@ -1,39 +1,74 @@
 ## Archaeological Spatial Analysis in R - ARCH0000
 
-tutor: Michal Michalski 
+tutor: Michal Michalski ([michal.m.michalski\@durham.ac.uk](mailto:michal.m.michalski@durham.ac.uk){.email})
 
-You can use the [editor on GitHub](https://github.com/topographos/asar/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+### Learning outcomes
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The aim of this course is to introduce students to spatial data processing, analysis and visualization using R programming language. Students will learn and develop techniques to analyse data used in landscape and settlement archaeology. The course will be delivered in through live coding sessions and hands-on exercises. This class has no prerequisites.
 
-### Markdown
+On successful completion of the course participants will be able to:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+-   Understand geospatial concepts and R's spatial capabilities
 
-```markdown
-Syntax highlighted code block
+-   Read, write, and manipulate vector and raster data in R
 
-# Header 1
-## Header 2
-### Header 3
+-   Perform basic spatial analysis and visualise the results
 
-- Bulleted
-- List
+-   Apply the tools and methods to their own projects
 
-1. Numbered
-2. List
+### Timetable
 
-**Bold** and _Italic_ and `Code` text
++---------------+-------------+-------------+-------------------------------+
+| Dates         | Hours       | Location    | Topic                         |
++===============+=============+=============+===============================+
+| 17th February | 1400 - 1630 | TBC         | Lesson 0                      |
+|               |             |             |                               |
+|               |             |             | Introduction to R and RStudio |
+|               |             |             |                               |
+|               |             |             | Lesson 1                      |
++---------------+-------------+-------------+-------------------------------+
+| 24th February | 1400 - 1630 | TBC         | Lesson 2                      |
+|               |             |             |                               |
+|               |             |             | Vector Analysis               |
++---------------+-------------+-------------+-------------------------------+
+| 3rd March     | 1400 - 1630 | TBC         | Lesson 3                      |
+|               |             |             |                               |
+|               |             |             | Raster Analysis               |
++---------------+-------------+-------------+-------------------------------+
+| 10th March    | 1400 - 1630 | TBC         | Lesson 4                      |
+|               |             |             |                               |
+|               |             |             | Raster and Vector Interaction |
++---------------+-------------+-------------+-------------------------------+
 
-[Link](url) and ![Image](src)
-```
+### Lessons
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+Lesson 0
 
-### Jekyll Themes
+-   slides
+-   notebook
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/topographos/asar/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Lesson 1
 
-### Support or Contact
+-   slides
+-   notebook
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Lesson 2
+
+-   slides
+-   notebook
+
+Lesson 3
+
+-   slides
+-   notebook
+
+Lesson 4
+
+-   slides
+-   notebook
+
+### Assessment
+
+**Deadline**
+
+### Resources

@@ -1,10 +1,13 @@
-title:
+title: Minimalist theme
 logo: assets/hex_logo.png
+email: bogus at gmail dot com
+description: Minimalist is a theme powered by Jekyll. It is modified based on the Minimal theme
 theme: jekyll-theme-minimal
-color-scheme: light
+color-scheme: auto
 plugins:
   - jekyll-remote-theme
 remote_theme: BDHU/minimalist
 sidebar:
   - name: GitHub
     icon: <i class="fa-brands fa-github"></i>
+    link: https://github.com/BDHU
