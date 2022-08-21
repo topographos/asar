@@ -1,6 +1,6 @@
 logo: assets/hex_logo.png
 description: Minimalist is a theme powered by Jekyll. It is modified based on the Minimal theme
-theme: jekyll-theme-slate
+theme: jekyll-theme-minimal
 color-scheme: auto
 plugins:
   - jekyll-remote-theme
