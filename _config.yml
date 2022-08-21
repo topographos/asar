@@ -1,11 +1,4 @@
-logo: assets/hex_logo.png
-description: Minimalist is a theme powered by Jekyll. It is modified based on the Minimal theme
 theme: jekyll-theme-minimal
-color-scheme: auto
-plugins:
-  - jekyll-remote-theme
-remote_theme: BDHU/minimalist
-sidebar:
-  - name: GitHub
-    icon: <i class="fa-brands fa-github"></i>
-    link: https://github.com/topographos/asar
+logo: assets/hex_logo.png
+title: ASAR
+description: An introduction to Archaeological Spatial Analysis using R programming language
