@@ -1,5 +1,4 @@
 logo: assets/hex_logo.png
-email: michal.m.michalski@durham.ac.uk
 description: Minimalist is a theme powered by Jekyll. It is modified based on the Minimal theme
 theme: jekyll-theme-minimal
 color-scheme: auto
@@ -9,4 +8,4 @@ remote_theme: BDHU/minimalist
 sidebar:
   - name: GitHub
     icon: <i class="fa-brands fa-github"></i>
-    link: https://github.com/BDHU
+    link: https://github.com/topographos/asar
