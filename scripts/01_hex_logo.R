@@ -12,6 +12,8 @@ h_ways = st_read("data/data.gpkg", layer = "hollow_ways")
 
 sites  = st_read("data/data.gpkg", layer = "sites_point")
 
+sites$size_ha = sites$size_ha * 1.5
+
 survey = st_read("data/data.gpkg", layer = "survey_extent")
 
 # plot
@@ -19,9 +21,10 @@ survey = st_read("data/data.gpkg", layer = "survey_extent")
 p = ggplot() +
   geom_sf(data = sites, 
           aes(size = size_ha),
-          color = "#c03728", 
+          color = "#645f55", 
           fill = "#645f55",
           alpha = .1) +
+  geom_sf(data = sites, color = "#A84268", size = 0.1) +
   theme_minimal() +
   theme(legend.position="none") +
   theme(axis.text.x=element_blank(),
@@ -42,7 +45,7 @@ royal = wes_palette("Royal1")
 
 sticker(p,
         package="ASAR",
-        s_x=1, s_y= 0.9, s_width= 1.75, s_height= 1.75,
+        s_x=1, s_y= 1, s_width= 1.75, s_height= 1.75,
         p_family = "sans-serif",
         p_size= 5, 
         p_y = 0.6,
