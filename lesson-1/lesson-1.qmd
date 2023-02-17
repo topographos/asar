@@ -1,0 +1,469 @@
+---
+title: "Archaeological Spatial Analysis in R"
+subtitle: "Lesson 1"
+author:
+  - name: Michal Michalski
+    email: michal.m.michalski@durham.ac.uk
+    affiliations: Durham University
+format: 
+  html:
+    code-fold: false
+    toc: true
+    code-overflow: wrap
+editor: visual
+execute: 
+  warning: false
+theme: cosmo
+---
+
+Learning Objectives
+
+-   learn about R-spatial ecosystem
+
+-   introduce vector and raster data
+
+-   plot spatial data that are used in the class
+
+## Introduction
+
+The objective of this lesson is to read and plot spatial data in R.
+
+You will also become familiar with syntax variety of packages used for mapping.
+
+## Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](https://r.geocompx.org/)
+
+## R-spatial
+
+CRAN Task View: Analysis of Spatial Data provides a comprehensive list of most of R packages created to work with spatial data.
+
+<https://cran.r-project.org/web/views/Spatial.html>
+
+Fundamental are R packages with classes representing spatial data:
+
+-   vector: `sf`, `sp`, `stars`, `spatstats`
+
+-   raster: `terra`, `raster`, `stars`
+
+## Data
+
+The data were obtained from various publications and open source repositories.
+
+Vector data for the classes are stored in a **geopackage** data.gpkg**.**
+
+`data>vect`
+
+Raster data are stored in **geotiff** format.
+
+`data>rast`
+
+Follow this link to download the data on your computer.
+
+## Vector
+
+The sf package
+
+We are going to use package sf to read and map vector layers by using the following functions:
+
+-   `st_layers()` returns layers in a data source
+
+-   `st_read()` reads simple features from file or database.
+
+-   `plot()` plots one or more attributes
+
+-   `head()` return first parts of the object
+
+Load sf package
+
+```{r}
+# install.packages("sf")
+library(sf)
+```
+
+Explore content of the geopackage
+
+```{r}
+
+st_layers("../data/vect/data.gpkg")
+
+```
+
+**survey_extent** - 12 km radius covering area surveyed around Tell Beydar
+
+**source:** Ur and Wilkinson 2008
+
+```{r}
+# read
+survey_extent = st_read("../data/vect/data.gpkg", layer = "survey_extent", quiet = TRUE)
+
+# glimpse
+# head(survey_extent)
+
+# plot
+plot(survey_extent["code"], lty = "dashed", col = NA)
+```
+
+**sites_point** - a point layer of archaeological settlements surveyed around Tell Beydar
+
+**source:** Ur and Wilkinson 2008; Palmisano et al. - [link](https://doi.org/10.5281/zenodo.4294558)
+
+```{r}
+
+# read
+sites = st_read("../data/vect/data.gpkg", layer = "sites_point", quiet = TRUE)
+
+# glimpse
+# head(sites, n = 3)
+
+#plot
+plot(st_geometry(sites))
+
+```
+
+**sites_polygon -** a polygon layer of archaeological settlements detected using remote sensing based survey; the polygons were derived from sites outlines and locations.
+
+**source:** Menze and Ur, 2012 - [link](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/7H8K3N)
+
+```{r}
+
+# read
+sites_polygon = st_read("../data/vect/data.gpkg", layer = "sites_polygon", quiet = TRUE)
+
+# glimpse
+# head(sites_polygon, n = 3)
+
+#plot
+plot(sites_polygon[,"max_elevation_mound_m"], 
+     nbreaks = 10, 
+     pal = hcl.colors(11, "Cividis"),
+     lwd = 0.1,
+     key.pos = 4)
+```
+
+**hollow_ways** - ancient tracks now visible as shallow linear depressions; represented as polylines.
+
+**source:** Ur, 2010 - [source](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NYWQO2)
+
+```{r}
+# read
+hollow_ways = st_read("../data/vect/data.gpkg", layer = "hollow_ways", quiet = TRUE)
+
+# glimpse
+# head(hollow_ways, n = 3)
+
+# convert numeric to factor
+hollow_ways$hw_type = as.factor(hollow_ways$hw_type)
+
+#plot
+plot(hollow_ways[,"hw_type"])
+```
+
+**rimes_rivers** - a watercourse derived from 'Rivers of Mesopotamia' dataset
+
+**source:** Bätscher, 2020 - [link](https://doi.org/10.5281/zenodo.3787265)
+
+```{r}
+
+# read
+rivers = st_read("../data/vect/data.gpkg", layer = "rimes_rivers", quiet = TRUE)
+
+# glimpse
+# head(rivers, n = 3)
+
+#plot
+plot(st_geometry(rivers), col = "#80c5de")
+```
+
+**geology**: polygon layer derived from geology dataset for the Jazira Region of Syria.
+
+**source:** Mathys, 2017 - [link](https://doi.org/10.7488/ds/1795)
+
+```{r}
+#read
+geology = st_read("../data/vect/data.gpkg", layer = "geology")
+
+# glimpse
+# head(geology, n = 3)
+
+#plot
+plot(geology[,"SEDIMENTS"], key.width = lcm(6), key.pos = 4, pal = hcl.colors(4, "Roma"))
+
+```
+
+## Raster
+
+Raster data can be an are handled by [terra](https://cran.r-project.org/web/packages/terra/index.html) package. It provides classes and methods to read raster, execute raster algebra expression or regression type models.
+
+We will now explore raster data used in this class using the following functions:
+
+-   `rast()` creates a SpatRaster object
+
+-   `plot()` base function to plot raster data
+
+-   `plotRGB()` allows to map RGB color image
+
+Load package
+
+```{r}
+
+# install.packages("terra")
+library(terra)
+
+```
+
+Read digital elevation model (DEM) - single layer
+
+```{r}
+
+# read in dem
+dem = rast("../data/rast/dem.tif")
+
+# print dem to look at the summary
+dem
+
+```
+
+Plot raster
+
+```{r}
+
+plot(dem , main = "Digital Elevation Model")
+```
+
+Read Landsat image - multi-layer
+
+```{r}
+
+landsat = rast("../data/rast/landsat_tbs/landsat.tif")
+
+landsat
+```
+
+Plot function will display all 3 bands
+
+```{r}
+
+plot(landsat)
+
+```
+
+We can use `plotRGB()` to plot Red-Green-Blue image from 3 bands of Landsat image.
+
+```{r}
+
+plotRGB(landsat, r = "band_4", g = "band_3", b = "band_2", stretch = "lin")
+
+```
+
+## Mapping
+
+#### Data
+
+Load and tidy data for mapping
+
+```{r}
+# r packages
+library(dplyr)
+library(terra)
+library(tmap)
+library(sf)
+
+# survey
+survey_extent = st_read("../data/vect/data.gpkg", layer = "survey_extent", quiet = TRUE)
+
+# rivers
+rivers = st_read("../data/vect/data.gpkg", layer = "rimes_rivers", quiet = TRUE)
+
+# hollow_ways
+hollow_ways = st_read("../data/vect/data.gpkg", layer = "hollow_ways", quiet = TRUE)
+
+# geology
+geology = st_read("../data/vect/data.gpkg", layer = "geology", quiet = TRUE)
+
+# select basalt sediment
+basalt = subset(geology, SEDIMENTS == "Basalts", quiet = TRUE)
+
+# sites 
+sites = st_read("../data/vect/data.gpkg", layer = "sites_point", quiet = TRUE) 
+
+# raster
+dem = rast("../data/rast/dem.tif")
+
+# color
+c3t1 <- tidyterra::hypsometric_tints_db %>%
+  filter(pal == "c3t1")
+
+# hillshade
+slope = terrain(dem, 'slope', unit='radians')
+
+aspect = terrain(dem, 'aspect', unit='radians')
+
+hillshade = shade(slope, aspect, 30, 315)
+
+
+```
+
+#### mapsf
+
+basic plot
+
+```{r}
+
+#install.packages(mapsf)
+library(mapsf)
+
+# theme from arguments
+mf_init(x = survey_extent)
+# Plot the base map
+mf_map(x = survey_extent)
+# Plot proportional symbols
+mf_map(x = sites, var = "size_ha", type = "prop")
+
+```
+
+advanced plot
+
+```{r}
+
+# set theme
+mf_theme("default")
+# Initiate a base map
+mf_init(x = survey_extent)
+# plot survey_extent 
+mf_map(survey_extent, add = TRUE)
+# plot population
+mf_map(
+  x = sites, 
+  var = "size_ha",
+  type = "grad",
+  breaks = c(0,5,10,20,45),
+  col = "brown4",
+  leg_pos = "bottomleft2",  
+  leg_title = "Area in Hectares"
+)
+# annotation
+mf_annotation(
+  x = c(641692.6, 4066955),
+  txt = "Tell Beydar",
+  pos = "topleft", cex = 1.2, font = 2,
+  halo = TRUE, s = 1.5
+)
+# layout
+mf_layout(title = "TBS Survey - Sites distribution", 
+          credits = paste0("Sources: Ur and Wilkinson 2008\n",
+                           "mapsf ", 
+                           packageVersion("mapsf")))
+
+
+```
+
+#### ggplot
+
+basic plot
+
+```{r}
+
+# install.packages("ggplot2")
+library(ggplot2)
+
+# plot
+ggplot() + 
+  geom_sf(data = survey_extent) +
+  geom_sf(data = sites,aes(size =  size_ha)) +
+  coord_sf(datum = st_crs(sites))
+
+```
+
+advanced plot
+
+```{r}
+# library to handle SpatRaster 
+library(tidyterra)
+
+# plot
+ggplot() + 
+  geom_spatraster_contour_filled(data = dem, show.legend = FALSE) +
+  geom_sf(data = survey_extent, colour = "black",lty = "dashed", fill = NA) +
+  geom_sf(data = sites,aes(size =  size_ha)) +
+  scale_fill_whitebox_d(palette = "atlas") +
+  scale_size(name = "Size Ha") +
+  coord_sf(datum = st_crs(sites)) +
+  labs(
+    title = "Tell Beydar Survey",
+    caption = "Source: Ur and Wilkonson 2008"
+  ) +
+  theme_void()
+```
+
+#### tmap
+
+basic plot
+
+```{r}
+
+# install.packages("tmap")
+library(tmap)
+
+# simple map
+tm_shape(survey_extent) +
+  tm_borders() +
+  tm_shape(sites) +
+  tm_bubbles(size = "size_ha")
+
+
+```
+
+advanced plot
+
+```{r}
+# hillshade
+(map = tm_shape(hillshade) +
+  tm_raster(palette = gray(0:100 / 100), n = 100, legend.show = FALSE) +
+# dem
+  tm_shape(dem) +
+  tm_raster(alpha = 0.7, palette = c3t1$hex,legend.show = FALSE, n = 10) +
+# survey extent
+  tm_shape(survey_extent) +
+  tm_borders(lwd = 2,lty = "dashed", col = "#5f8171") +
+# watercourse
+  tm_shape(rivers) +
+    tm_lines(col = "#80c5de", lwd = 3) +
+# hollow ways
+  tm_shape(hollow_ways) +
+    tm_lines(col = "#5f8171", alpha = 0.2, lwd = 1) +
+# geology 
+  tm_shape(basalt) +
+    tm_borders(lty = "dashed") +
+# sites
+  tm_shape(sites) +
+  tm_bubbles(col = "size_ha",
+             shape = 19, 
+             size = "size_ha",
+             palette = "black",
+             legend.col.show = FALSE,
+             title.size = "Site Size (Ha)",
+             legend.size.is.portrait = TRUE,
+             scale = 1.5,
+             legend.hist = T
+             ) +
+# layout
+  tm_scale_bar(breaks = c(0,2,4), position = c("left", "bottom")) +
+  tm_credits("Source:Ur and Wilkinson 2008",) +
+  tm_layout(
+    main.title = "Tell Beydar Archaeological Survey",
+    frame = TRUE, 
+    inner.margins = 0,
+    legend.outside = TRUE,
+    legend.hist.width = 1,
+    legend.hist.height = 0.8))
+
+# save map
+# tmap_save(map, "assets/map.png")
+
+```
+
+## Exercise
+
+1.  Go back to your tmap basic map and develop the code further.
+2.  Consult the code in advanced example abd Chapter 9 of *Geocomputation with R.*

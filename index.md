@@ -1,4 +1,5 @@
 ### ASAR
+
 ## Archaeological Spatial Analysis in R - ARCH0000
 
 tutor: Michal Michalski
@@ -17,44 +18,39 @@ On successful completion of the course participants will be able to:
 
 -   Apply the tools and methods to their own projects
 
+### Location
+
+The classes will be in MCS1007, the new Maths and Science Building in Upper Mountjoy.
+
 ### Timetable
 
-| Dates        | Hours       | Location | Topic          |
-|--------------|-------------|----------|----------------|
-| 7th February | 1400 - 1630 | TBC      | Lesson 0 and 1 |
-| 24th February| 1400 - 1630 | TBC      | Lesson 2       |
-| 3rd March    | 1400 - 1630 | TBC      | Lesson 3       |
-| 3rd March    | 1400 - 1630 | TBC      | Lesson 4       |
+| Dates         | Hours       | Topic                    |
+|---------------|-------------|--------------------------|
+| 17th February | 1100 - 1330 | Intro to R and R spatial |
+| 24th February | 1100 - 1330 | Vector                   |
+| 3rd March     | 1100 - 1330 | Raster                   |
+| 10th March    | 1100 - 1330 | Vector  - Raster         |
 
-### Lessons
+### Sessions
 
-Lesson 0
+**Friday 17th February**
 
--   slides
--   notebook
+Content
 
-Lesson 1
+-   Lesson 0 - Intro to R
 
--   slides
--   notebook
+-   Lesson 1 - Intro to R - spatial
 
-Lesson 2
+Readings
 
--   slides
--   notebook
+-   Engel, C. \*Introduction to R\* - [link]([https://cengel.github.io/R-intro/){.uri}](https://cengel.github.io/R-intro/){.uri})
 
-Lesson 3
+-   \*R for Data Science,\* 2nd edition, Chapter 7 and 9 - [link]([https://r4ds.hadley.nz)](https://r4ds.hadley.nz)
 
--   slides
--   notebook
-
-Lesson 4
-
--   slides
--   notebook
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](<https://r.geocompx.org/>)
 
 ### Assessment
 
-**Deadline**
+The summative deadline for project delivery will be **12pm, Monday 24th April 2023**, via Turnitin.
 
 ### Resources

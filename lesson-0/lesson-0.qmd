@@ -1,27 +1,640 @@
 ---
-title: "lesson-0"
-author: "Michal Michalski"
-format: pdf
+title: "Archaeological Spatial Analysis in R"
+subtitle: "Lesson 0"
+author:
+  - name: Michal Michalski
+    email: michal.m.michalski@durham.ac.uk
+    affiliations: Durham University
+format: 
+  html:
+    code-fold: false
+    toc: true
+    code-overflow: wrap
 editor: visual
+execute: 
+  warning: false
+theme: cosmo
 ---
 
-## Quarto
+Learning Objectives
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+-   learn about R and RStudio
 
-## Running Code
+-   set up R project
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   get started
+
+## Introduction
+
+This lesson is designed as a crash course to get you started with R and RStudio right away. At the end of the lesson you should have basic knowledge of R language and R project ready for further analysis.
+
+## Background Reading
+
+-   Engel, C. *Introduction to R* - [link](https://cengel.github.io/R-intro/){.uri}
+-   *R for Data Science,* 2nd edition, Chapter 7 and 9 - [link](https://r4ds.hadley.nz/)
+
+## R software
+
+R software is an interpreter installed in machine that allows you computer to understand and run the R code.
+
+::: {.callout-note appearance="simple"}
+Find R installation on your computer and open the R console. You could a default prompt `>` where R is expecting an input. Try typing 2 + 2 and press Enter. Now type 6 - 2 and press Enter again. Now you can use keyboard up and down arrows to browse between the commands you just typed in and execute them again.
+:::
+
+## R language
+
+R language is an open source statistical programming language designed to write code (instructions) that are executed (run) by computer. You will learn R language syntax to be able to write these instructions line by line in a script.
+
+::: {.callout-note appearance="simple"}
+R got his name after developers Ross Ihaka and Robert Gentleman of the Department of Statistics at the University of Auckland.
+
+R was inspired by an earlier S language for statistics developed at Bell Laboratories (formerly AT&T, now Lucent Technologies)
+
+for more background information visit this [link.](https://www.r-project.org/about.html){.uri}
+:::
+
+## RStudio
+
+RStudio is an IDE (Integrated Development Software), a software designed to write and execute code and interact with R language.
+
+## Installation
+
+R and RStudio is free and easy to install. Make sure you have installed most recent version - R 4.2.0 or latest.
+
+There are many online resources that guide through the process:
+
+-   [resource number one](https://rstudio-education.github.io/hopr/starting.html#starting){.uri}
+
+-   [resource number two](https://learnr-examples.shinyapps.io/ex-setup-r/){.uri}
+
+-   [resource number three](https://cengel.github.io/R-intro/index.html#setup-instructions){.uri}
+
+::: {.callout-important appearance="simple"}
+Install R first then RStudio.
+:::
+
+## Getting started with RStudio
+
+### Interface
+
+Let's open RStudio on your computer.
+
+![RStudio components](assets/rstudio.png)
+
+RStudio Graphical User Interface (GUI) consists of four panes.
+
+Each pane have number of tabs that allow you to switch between different information.
+
+The content of the windows is as follows:
+
+-   **bottom - left** - console is used to enter and execute R commands (press enter after your code). It will also print results from script pane
+
+-   **top-left** - this window is used as text editor for writing R code in script files.
+
+    In order to open the pan go to `File > New File > R Script`
+
+-   **top-right** - environment pane contains the information that are currently stored as variables;history tab with record of code executed in the session;
+
+-   **bottom - right** - this pane contains multiple tabs: 'Files' to access file directory; 'Plots' for rendering visualizations; 'Packages' to manage installed libraries; 'Help' to access help pages.
+
+::: {.callout-tip appearance="simple"}
+Keyboard Shortcuts Reference: `Tools > Keyboard Shortcuts Help`
+
+IDE Cheat Sheet: `Help > Cheat Sheets > RStudio IDE Cheat Sheet`
+:::
+
+**Some live saving settings:**
+
+1.  Theme
+
+-   Make sure RStudio is open.
+-   Go to `Tools > Global Options…` select `Appearance` on the left tab
+-   In the Editor theme try various themes before settling on your favorite.
+
+2.  Workspace
+
+It is recommended not to preserve a workspace between sessions
+
+-   Go to `Tools > Global Options…`
+-   In the General Tab untick box next to *"Restore .RData into workspace at startup"*
+-   choose "Never" in the drop down next to *"Save workspace to .RData on exit"*
+
+### R Project
+
+RStudio projects are basically working directories that are associated with R.
+
+This concept allows you to keep all code, data, figures etc. together in one folder and access them pragmatically using relative paths.
+
+Basically, the project is a base location from which you could access all other files.
+
+The steps to create a new project are as follows
+
+`File > New Project .. > New Directory / Existing Directory / Version Control`
+
+::: {.callout-important appearance="simple"}
+It is important to understand the difference between a relative path, that contains the location of a file relative to the working directory and the absolute path that contains the location from the root directory.
+
+relative path: `"figures/map.png"`
+
+absolute path: "`C:/Users/michalmichalski/Documents/asar/figures/map.png"`
+
+You can find out your current working directory by executing function `getwd()`
+:::
+
+It is a good practice to create sub-folders in the projects:
+
+-   `data/raw_data/vect`
+
+-   `data/raw_data/rast`
+
+-   `data/derived_data/vect`
+
+-   `data/derived_data/rast`
+
+-   `figures`
+
+-   `report`
+
+::: {.callout-tip appearance="simple"}
+An advanced version of R project are Research Compendia that add tools and workflows to archive a reproducible scientific publications.
+
+<https://research-compendium.science/>
+:::
+
+### Scripts
+
+R scripts are text files, with extension .R, that help to organize, comment and save your code.
+
+### Comments
+
+Add `#` hashes to add comments to your code. It helps to give a narrative and clarity.
 
 ```{r}
-1 + 1
+# calculate mean
+mean(c(1,3,5))
 ```
-
-You can add options to executable code like this
 
 ```{r}
-#| echo: false
-2 * 2
+########################################
+# Title: Settlement Catchment Analysis
+# Purpose: didactic
+# Author: Michal Michalski
+# Date: 01/02/2023
+# Version: 0.1
+# Updated 09/02/2023
+# Data: sites.csv
+# Content: 1. data import, 2. data wrangling, 3. analysis, 4. plots 
+# License Data: -
+# License Script:
+#########################################
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+### Style
+
+Style encompass object and file naming convention, spaces etc.,
+
+For example, don't start object names with number, don't use special signs.
+
+I like using underscores like in [Snake Case](https://en.wikipedia.org/wiki/Snake_case) style.
+
+-   GOOD:
+    `01_data_cleaning.R
+    ths_sites.csv`
+
+-   BAD:
+    `code.R
+    data!.csv`
+
+Have a look at the [tidyverse style guide](https://style.tidyverse.org/index.html) below, and remember to be consistence.
+
+### Exercise
+
+1.  Create folder called \*asar_lessons\* (lower case).
+
+2.  Create a new project in this folder.
+
+3.  Create sub-directories.
+
+4.  Create script called `00_lesson_0.R`
+
+5.  Provide meta-information in the script header.
+
+## Getting started with R
+
+Commands and executing code
+
+To execute code put a cursor at the end of line and press enter or in the script highlight / select the code and click Run button.
+
+You can also use a keyboard shortcut: cmd + enter (Mac) or ctr + enter (Windows).
+
+### R as calculator
+
+R can be used as a calculator.
+
+```{r}
+
+2 + 2  # addition
+
+4 - 2  # minus
+
+2 * 2  # multiplication
+
+4^2  # 4 * 4 power function
+
+sqrt(16) # the square root of 16
+
+round(7.237, 2) # round number to second decimal places
+
+```
+
+### R objects
+
+Objects are
+
+In RStudio the keyboard shortcut for the assignment operator `<-` is Alt + - (Windows) or Option + - (Mac).
+
+```{r}
+
+area <-  4.815
+
+pop_per_hectar <-  100
+
+area * pop_per_hectar
+
+site_pop <-  area * pop_per_hectar
+
+```
+
+We can print and remove objects that are in our workspace
+
+```{r}
+
+objects() 
+
+ls()
+
+rm(area)
+
+rm(list = ls())
+
+```
+
+### R functions
+
+Function is a sequence of code (instructions) "wrapped out" to perform a particular task.
+
+```{r}
+
+# set of numbers
+size_ha = c(7.56, 4.80, 10.5, 20, 7.67)
+
+# arguments by position
+mean(size_ha, trim = 0.5, TRUE)
+
+# arguments by name 
+mean(na.rm = TRUE, trim = 0.5, x = size_ha)
+
+# arguments by position,rare arguments by name
+mean(size_ha, trim = 0.5, na.rm = TRUE)
+```
+
+### R packages
+
+A collection of functions.
+
+```{r}
+
+# install.packages("stringr") # only once
+
+library(stringr) # in every R session
+
+str_sub("THS_48_0_0", start = 1, end = 3)
+
+stringr::str_sub("THS_48_0_0", start = 1, end = 3)
+```
+
+### Help
+
+There several options to look for help when you get an error message or you get stuck:
+
+-   read the error message
+
+-   read the official documentation
+
+-   Google (you will certainly end up on StackOverflow)
+
+-   ask question online
+
+::: {.callout-tip appearance="simple"}
+Its is a good practice when asking an online question to post a reproducible example for example using [reprex](https://reprex.tidyverse.org/) package.
+:::
+
+```{r}
+
+# help.start()
+
+# help(mean)
+
+#?mean
+
+#??mean
+
+```
+
+### Exercise
+
+```{r}
+
+# start with clean slate
+
+rm(list=ls())
+
+# data
+site_id <- "THS_48_0_0"
+
+area <-  4.815
+
+period <- "Iron Age"
+
+# analysis
+
+# theory supported estimation 
+peson_per_hectar <-  100
+
+# calculation
+
+# lookup round() function
+help(round)
+
+site_pop <-  round(area * peson_per_hectar)
+
+# write report
+paste("Archaeologists estimate the population of", site_id,  "in", period,  "around", site_pop)
+
+```
+
+## Data
+
+Data values of a particular type are held in data structure or classes.
+
+### Data Types
+
+```{r}
+
+# character
+is.character("TBS_0_0_1")
+
+# numeric 
+
+is.numeric(1)
+
+# logical
+is.logical(TRUE)
+
+```
+
+### Data Classes
+
+#### Vector
+
+Vectors are list of items that are of the same type, we assign a series of values using c() function.
+
+```{r}
+# character vector
+site_id = "THS_1_0_0"
+
+# c function with items seperated by comma
+site_id = c("THS_1_0_0", "THS_2_0_0", "THS_3_0_0")
+
+# print
+site_id
+
+# numeric vector
+size_ha = c(18.0, 5.6, 7.2)
+
+# print
+size_ha
+
+# numeric vector of seqence
+num_id = c(1:3)
+
+# print
+num_id
+
+# logical vector
+tell = c(TRUE, FALSE, FALSE)
+
+#print
+tell
+```
+
+functions to asses the vectors and their structure
+
+```{r}
+
+# test the object
+is.vector(site_id)
+
+# check the number of items
+length(site_id)
+
+# check the structure
+str(site_id)
+```
+
+Arithmetic operations are performed element by element
+
+```{r}
+size_ha * 100
+
+pop = size_ha * 100
+
+is.vector(pop)
+```
+
+Accesing vector elements - we can access vector element by refering to index number in brackets `[]`.
+
+```{r}
+
+# first element
+size_ha[1]
+
+# range
+size_ha[1:2]
+
+```
+
+#### Factor
+
+Factors - are used to categorize data, period: Iron Age, Bronze Age.
+
+```{r}
+
+# create vector
+period <-  c("Iron Age", "Iron Age", "Bronze Age")
+
+# use factor function and vector as an argument
+period <- factor(period)
+
+str(period)
+
+period
+
+# print the levels
+levels(period)
+
+summary(period)
+```
+
+#### List
+
+R list is an object consisting of an ordered collection of objects called components a list can contain variety of objects: vectors, function and so on.
+
+```{r}
+
+THS_24_0_0 = list(name = "THS_24_0_0", size = c(16.06,10.41, 1.76), 
+                  periods = c("Late Bronze Age", "Khabur", "Iron Age"), 
+                  category = factor(c("small town", "small town", "village")) )
+
+```
+
+Access Lists Elements
+
+```{r}
+THS_24_0_0[[1]]
+
+THS_24_0_0$name
+
+THS_24_0_0[[2]]
+
+THS_24_0_0$size
+
+THS_24_0_0$periods
+
+THS_24_0_0$category
+
+THS_24_0_0[1:3]
+```
+
+#### Matrix
+
+Matrix is a two dimensional data structure, with columns and rows.
+
+```{r}
+# create matrix - two dimensional data structure
+m = matrix(1:9, nrow = 3, ncol = 3)
+
+# print
+m
+
+# check for attributes
+attributes(m)
+
+# check for dimension
+dim(m)
+
+
+```
+
+#### Array
+
+Array is a data structure that can have more than two dimensions.
+
+```{r}
+
+# values ranging from 1 to 18
+vector <- c(1:18)
+vector
+
+# An array with more than one dimension
+array <- array(vector, dim = c(3, 3, 2))
+array
+
+# check for attributes
+attributes(array)
+
+# check for dimension
+dim(array)
+
+```
+
+Access arrays element.
+
+```{r}
+
+array[2, 2, 2]
+
+```
+
+#### Data frame
+
+Data frame is like a data table with named rows and columns, that can hold a different data types in columns.
+
+In reality, a list in which each element is a vector of the same lenth.
+
+```{r}
+# a collection of same lenth vectors
+site_id = c("THS_1_0_0", "THS_2_0_0", "THS_3_0_0")
+
+period =  c("Iron Age", "Iron Age", "Bronze Age")
+
+size_ha = c(18.0, 5.6, 7.2)
+
+# construct df
+sites <-  data.frame(site_id, size_ha, period)
+
+# add new variable
+sites$tell
+
+# assgine values
+sites$tell = c(TRUE, FALSE, TRUE)
+
+```
+
+### Indexing
+
+```{r}
+
+# rows - single
+sites[1,]
+
+# rows - range
+sites[1:2, ]
+
+# column - single
+sites[,1]        # as vector
+
+sites["site_id"] # as data frame
+
+sites$site_id     # $ sign
+
+sites[sites$site_id == "THS_1_0_0",]  # note the coma, filter on rows
+
+#extract all columns
+sites[sites$size_ha > 10,]
+
+subset(sites, site_id == "THS_1_0_0")
+```
+
+### Reading Data
+
+```{r}
+
+sites_df = read.csv("../data/sites.csv")
+
+head(sites_df)
+
+```
+
+### Writing Data
+
+```{r}
+
+write.csv(sites, "../data/sites.csv", row.names = FALSE)
+```
+
+### Exercise
+
+1.  Read CSV file
+2.  Select sites only from Iron Age
+3.  Export data frame as new file called `sites_iron_age.csv`
