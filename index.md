@@ -1,6 +1,6 @@
-### ASAR
+## Archaeological Spatial Analysis in R
 
-## Archaeological Spatial Analysis in R - ARCH43215
+## ARCH43215
 
 tutor: Michal Michalski
 
