@@ -1,6 +1,6 @@
 ### ASAR
 
-## Archaeological Spatial Analysis in R - ARCH0000
+## Archaeological Spatial Analysis in R - ARCH43215
 
 tutor: Michal Michalski
 
@@ -35,9 +35,11 @@ The classes will be in MCS1007, the new Maths and Science Building in Upper Moun
 
 Presentation - [link](https://topographos.github.io/asar/slides/slides.html)
 
+Data - [link](https://topographos.github.io/asar/data.zip)
+
 **Friday 17th February**
 
-Content
+Lesson
 
 -   Lesson 0 - Intro to R and Rstudio - [link](https://topographos.github.io/asar/lesson-0/lesson-0.html)
 

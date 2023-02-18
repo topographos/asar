@@ -197,13 +197,9 @@ For example, don't start object names with number, don't use special signs.
 
 I like using underscores like in [Snake Case](https://en.wikipedia.org/wiki/Snake_case) style.
 
--   GOOD:
-    `01_data_cleaning.R
-    ths_sites.csv`
+-   GOOD: `01_data_cleaning.R     ths_sites.csv`
 
--   BAD:
-    `code.R
-    data!.csv`
+-   BAD: `code.R     data!.csv`
 
 Have a look at the [tidyverse style guide](https://style.tidyverse.org/index.html) below, and remember to be consistence.
 
