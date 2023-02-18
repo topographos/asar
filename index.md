@@ -29,25 +29,27 @@ The classes will be in MCS1007, the new Maths and Science Building in Upper Moun
 | 17th February | 1100 - 1330 | Intro to R and R spatial |
 | 24th February | 1100 - 1330 | Vector                   |
 | 3rd March     | 1100 - 1330 | Raster                   |
-| 10th March    | 1100 - 1330 | Vector  - Raster         |
+| 10th March    | 1100 - 1330 | Vector - Raster          |
 
 ### Sessions
+
+Presentation - [link](https://topographos.github.io/asar/slides/slides.html)
 
 **Friday 17th February**
 
 Content
 
--   Lesson 0 - Intro to R
+-   Lesson 0 - Intro to R and Rstudio - [link](https://topographos.github.io/asar/lesson-0/lesson-0.html)
 
--   Lesson 1 - Intro to R - spatial
+-   Lesson 1 - Intro to R-spatial - [link](https://topographos.github.io/asar/lesson-1/lesson-1.html)
 
 Readings
 
--   Engel, C. \*Introduction to R\* - [link]([https://cengel.github.io/R-intro/){.uri}](https://cengel.github.io/R-intro/){.uri})
+-   Engel, C. *Introduction to R* - [link](https://cengel.github.io/R-intro/)
 
--   \*R for Data Science,\* 2nd edition, Chapter 7 and 9 - [link]([https://r4ds.hadley.nz)](https://r4ds.hadley.nz)
+-   *R for Data Science*, 2nd edition, Chapter 7 and 9 - [link](https://r4ds.hadley.nz)
 
--   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](<https://r.geocompx.org/>)
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](https://r.geocompx.org/)
 
 ### Assessment
 

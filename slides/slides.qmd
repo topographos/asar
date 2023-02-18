@@ -1,0 +1,178 @@
+---
+title: "Archaeological Spatial Analysis in R"
+author: "Michal Michalski, Durham University"
+format: 
+  revealjs:
+    theme: [white, assets/custom.scss]
+editor: visual
+---
+
+## Welcome !
+
+### Me:
+
+Michal Michalski
+
+<https://topographos.github.io/>
+
+### Lessons and Code:
+
+<https://github.com/topographos/asar>
+
+## Schedule
+
+The classes will be in MCS1007, the new Maths and Science Building in Upper Mountjoy[^1].
+
+[^1]: Fire Alarm %\>% Fire Exit %\>% Assembly Point
+
+Practical session every Friday (11 - 13.30)
+
+-   17th February - Intro to R and R-Spatial
+
+-   24th February - Vector based analysis
+
+-   3rd March - Raster based analysis
+
+-   10th March - Vector Raster interaction
+
+## Format
+
+``` {.r code-line-numbers="1|2|3|4|5|6"}
+# focus on learnig by doing
+asar <- class_material %>% # I will prepare material for each class
+  live_coding() %>%  # as in Data Carpentries
+  feedback() %>% # ask questions - I will take notes
+  update() %>% # I will update material and add resources
+  share() # I will share it as html, pdf
+```
+
+-   classes is generally built around book [Gecomputation with R.](https://r.geocompx.org/)[^2]
+
+-   although some additional resources are included (e.g.Intro to R)
+
+[^2]: Lovelace R, Nowosad K, Muenchow J, Geocomputation with R, 2023.
+
+## Assesment
+
+``` {.r code-line-numbers="1|2|3|4|5|7|8|9|10|11|12|13|14"}
+# practical
+assesment <- class_material %>% # you will re-use your material
+  data() %>%  # I will share new data with you
+  analysis() %>% # you will read, wrangle, analyse and visualize data
+  report(500) %>% # You will  write a short report 
+  
+# score
+score <- assesment %>% 
+  reproducibility() %>% # the analysis should be reproducible
+  folder_structure() %>% 
+  style() %>% # variables names, use of space tabs
+  narrative() %>%  # e.g., clear comments explaining code and workflow
+  analysis() %>% # accuracy - code should work as intended
+  report()  # explanation of deployed method, clear figures formatting
+```
+
+The summative deadline for project delivery will be **12pm, Monday 24th April 2023**, via Turnitin.
+
+## Archaeological Spatial Analysis
+
+*"The main aim of this work is to suggest to archaeologists that there is a potential for more detailed and systematic study of spatial patterning in archaeological data."*
+
+(Hodder and Orton, 1976, p1.)
+
+## Spatial Analysis[^3]
+
+[^3]: 0'Sullivan D, Unwin D Geographic Information Analysis, 2010, p.2.
+
+-   **Spatial data manipulation** - usually in GIS
+
+-   **Spatial data analysis** - descriptive and exploratory
+
+-   **Spatial statistical analysis** - deploy statistical methods
+
+-   **Spatial modelling** - construct models to predict outcomes
+
+## Why R? .Global_Env
+
+Tool - Driven Revolution in Archaeological Science [^4]
+
+[^4]: Schmidt SC, Marwick B. Tool-Driven Revolutions in Archaeological Science. Journal of Computer Applications in Archaeology. 2020;3(1):18--32. DOI: http://doi.org/10.5334/jcaa.29
+
+::: columns
+::: {.column width="50%"}
+![Schmidt and Marwick, Fig 1 and 2.](assets/marwick_schmidt_fig1.png)
+:::
+
+::: {.column width="50%"}
+![](assets/marwick_schmidt_fig2.png)
+:::
+:::
+
+## Why R? .Global_Env
+
+::: columns
+::: {.column width="70%"}
+Tool - Driven Revolution in Archaeological Science [^5]
+
+-   ecology has moved much earlier to open programming such as R
+
+-   archaeology have yet to adapt programming
+
+-   we should update training curricula
+
+-   emerging researcher in archaeology should be proficient in programming / analysis to collaborate with other domains (but not necessarily an expert in computer science)
+:::
+
+::: {.column width="30%"}
+![](assets/bot.jpg)
+:::
+:::
+
+[^5]: Schmidt SC, Marwick B. Tool-Driven Revolutions in Archaeological Science. Journal of Computer Applications in Archaeology. 2020;3(1):18--32. DOI: http://doi.org/10.5334/jcaa.29
+
+## Why R? .Local_Env
+
+-   It is a great resource for data analysis, data visualization, data science and machine learning
+-   It provides many statistical techniques
+-   It is easy to draw graphs in R, histograms, box plot etc..
+-   It works on different platforms (Windows, Mac, Linux)
+-   It is open-source and free
+-   It has a large community support
+-   It has many packages (libraries of functions)
+
+source: [w3schools](https://www.w3schools.com/r/r_intro.asp)
+
+## Why R? .Local_Env
+
+-   R integrates space and time (better than GIS)
+-   seamless workflows for spatial and non-spatial analysis
+-   GIS bridges
+-   automation and reproducibility
+-   literate programming
+
+case study: <https://topographos.github.io/banea/index.html>
+
+## Coding Time ! - Lesson 0
+
+## R-spatial
+
+CRAN Task View: Analysis of Spatial Data - [link](https://cran.r-project.org/web/views/Spatial.html)
+
+Historical Background
+
+**Talk:** A practical history of R-sig-geo by Roger Bivand
+
+-   video - [link](https://www.youtube.com/watch?v=LahHe37bnNE)
+
+-   slides - [link](https://github.com/rsbivand/geostat18/blob/master/geostat_bivand_18.pdf)
+
+**Article**: Bivand, R.S. Progress in the R ecosystem for representing and handling spatial data. J Geogr Syst 23, 515--546 (2021).
+
+## Vector
+
+![Source: Pebesma E, Bivand R, Spatial Data Science, Figure 1.7.](https://r-spatial.org/book/images/sf_deps.png)
+
+## Raster
+
+![Source: Roelandt N, Nowosad J, Getting Started with R and R-spatial, workshop FOSS4G2022 Fig 2.4.](https://bakaniko.github.io/foss4g2022-getting-started-rspatial/figs/terra-libs.png)
+
+## Coding Time ! - Lesson 1

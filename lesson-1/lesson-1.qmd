@@ -58,7 +58,8 @@ Raster data are stored in **geotiff** format.
 
 `data>rast`
 
-Follow this link to download the data on your computer.
+::: {.callout-important appearance="simple"}
+:::
 
 ## Vector
 
@@ -466,4 +467,4 @@ advanced plot
 ## Exercise
 
 1.  Go back to your tmap basic map and develop the code further.
-2.  Consult the code in advanced example abd Chapter 9 of *Geocomputation with R.*
+2.  Use the code in advanced example and Chapter 9 of *Geocomputation with R.*
