@@ -59,7 +59,6 @@ Raster data are stored in **geotiff** format.
 `data>rast`
 
 ::: {.callout-important appearance="simple"}
-
 **Data download:** <https://topographos.github.io/asar/data.zip>
 :::
 

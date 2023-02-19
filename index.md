@@ -58,3 +58,7 @@ Readings
 The summative deadline for project delivery will be **12pm, Monday 24th April 2023**, via Turnitin.
 
 ### Resources
+
+[Data Analysis and Visualization in R for Archaeologists](https://carpentries-incubator.github.io/R-archaeology-lesson/index.html)
+
+[CRAN Task View: Archaeological Science](https://github.com/benmarwick/ctv-archaeology)
