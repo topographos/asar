@@ -143,20 +143,16 @@ You can find out your current working directory by executing function `getwd()`
 
 It is a good practice to create sub-folders in the projects:
 
--   `data/raw_data/vect`
+-   `data/vect`
 
--   `data/raw_data/rast`
-
--   `data/derived_data/vect`
-
--   `data/derived_data/rast`
+-   `data/rast`
 
 -   `figures`
 
 -   `report`
 
 ::: {.callout-tip appearance="simple"}
-An advanced version of R project are Research Compendia that add tools and workflows to archive a reproducible scientific publications.
+An advanced version of R project is a Research Compendium that add tools and workflows to archive a reproducible scientific publications.
 
 <https://research-compendium.science/>
 :::
