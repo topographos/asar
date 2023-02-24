@@ -39,7 +39,7 @@ Data - [link](https://topographos.github.io/asar/data.zip)
 
 **Friday 17th February**
 
-Lesson
+Lessons
 
 -   Lesson 0 - Intro to R and Rstudio - [link](https://topographos.github.io/asar/lesson-0/lesson-0.html)
 
@@ -52,6 +52,16 @@ Readings
 -   *R for Data Science*, 2nd edition, Chapter 7 and 9 - [link](https://r4ds.hadley.nz)
 
 -   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](https://r.geocompx.org/)
+
+**Friday 24th February**
+
+Lessons
+
+-   Lesson 2 - Vector Analysis - [link](https://topographos.github.io/asar/lesson-1/lesson-2.html)
+
+Readings
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
 
 ### Assessment
 

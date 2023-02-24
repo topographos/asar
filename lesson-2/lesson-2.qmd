@@ -1,0 +1,633 @@
+---
+title: "Archaeological Spatial Analysis in R"
+subtitle: "Lesson 2"
+author:
+  - name: Michal Michalski
+    email: michal.m.michalski@durham.ac.uk
+    affiliations: Durham University
+format: 
+  html:
+    code-fold: false
+    toc: true
+    code-overflow: wrap
+editor: visual
+execute: 
+  warning: false
+theme: cosmo
+---
+
+Learning Objectives
+
+-   learn about simple feature package
+
+-   deal with coordinate reference system
+
+-   create vector data
+
+-   manipulate vector data
+
+## Introduction
+
+## Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
+
+## Packages
+
+```{r}
+
+
+library(sf) # vector representation
+library(dplyr) # data manipulation
+library(tmap) # mapping
+library(units) # units conversion
+
+```
+
+## Simple Features
+
+`{sf}` package is an R implementation of Open Geo-spatial Consortium (OGC) standard called Simple Features. It is a vector model representing world features as geometry types.
+
+The main geometry types are as follow:
+
+-   POINT
+
+-   LINESTRING
+
+-   POLYGON
+
+-   MULTIPOINT
+
+-   MULTILINESTRING
+
+-   MULTIPOLYGON
+
+-   GEOMETRYCOLLECTION
+
+![Source (https://r.geocompx.org/spatial-class.html#intro-sf)](https://r.geocompx.org/figures/sf-classes.png)
+
+There are three hierarchical classes in sf package:
+
+-   `sfg` - a single geometry
+
+-   `sfc` - a a list - column with geometry for each record
+
+-   `sf` - a table with non-geometry and geometry attributes
+
+![Source (https://r-spatial.github.io/sf/articles/sf1.html) NOTE: update the image](https://r-spatial.github.io/sf/articles/sf_xfig.png)
+
+In addition sf object can store information on dimension, bounding box and coordinate reference system.
+
+Now, we are going to construct a sf classes from scratch
+
+First, create a data frame with sites, from lesson - 0.
+
+```{r}
+
+# a collection of same lenth vectors
+site_id = c("THS_1_0_0", "THS_2_0_0", "THS_3_0_0")
+
+period =  c("Iron Age", "Iron Age", "Bronze Age")
+
+size_ha = c(18.0, 5.6, 7.2)
+
+# construct df
+sites <-  data.frame(site_id, size_ha, period)
+
+
+```
+
+Now we will construct and add geometry attributes for our sites.
+
+```{r}
+
+# function st_point() creates a single point from numeric vectors
+# we need three point for each site record
+p1 = st_point(c(5,2))
+
+p2 = st_point(c(3,3))
+
+p3 = st_point(c(1,6))
+
+# function st_sfc() create a column
+points_sfc = st_sfc(p1,p2,p3)
+
+
+# function st_sf() will extend the df by adding geometry column
+sites_sf = st_sf(sites, geometry = points_sfc)
+
+# plot
+plot(sites_sf$geometry)
+
+# print
+print(sites_sf)
+
+```
+
+A very common task is to convert a table (e.g. in csv format) that contains columns with X and Y coordinate into a point dataset. It could be achieved using `st_as_sf()` package. We
+
+```{r}
+
+# import the csv
+tbs_sites = read.csv("data/tbs_sites.csv")
+
+# check structure
+str(tbs_sites)
+
+# check first entries
+head(tbs_sites, n = 1)
+
+# check external software used by sf
+sf::sf_extSoftVersion()
+```
+
+Before continuing we will learn about Coordinate Reference System (CRS) of our data.
+
+It could be either geographic or projected. We can create a crs object it by passing an EPSG code to `st_crs()` function.
+
+EPSG stand for European Petroleum Survey Group responsible for maintaining a database of coordinate systems.
+
+```{r}
+
+# provide the EPSG code using st_crs()
+crs_wgs84 = st_crs(4326) # WGS84 has EPSG code 4326
+
+# it is a so colled crs object
+class(crs_wgs84)
+
+str(crs_wgs84)
+
+# access the wkt element
+cat(crs_wgs84$wkt)
+
+# return user input as a number
+crs_wgs84$epsg
+
+# PROJ string - old way - means packages / code was not updated
+crs_wgs84$proj4string
+
+
+```
+
+Now we can create simple feature object.
+
+```{r}
+
+# create a sf object
+# specify data frame - tbs_sites
+# specify column names with x an y
+# specify CRS
+
+tbs_sites_sf = st_as_sf(sites, coords = c("longitude", "latitude"), crs = 4326)
+
+plot(tbs_sites_sf$geometry)
+
+```
+
+We can transform our data to other projection using `st_transform()` function
+
+```{r}
+
+
+# transform from geodetic to projected
+# provide the EPSG code using st_crs() - https://epsg.io/32637
+
+UTM_Zone_37N = st_crs(32637) # IGRS_UTM_Zone_38N EPSG: 3891
+
+# transform sites from 
+
+tbs_sites_sf = st_transform(tbs_sites_sf, UTM_Zone_37N)
+
+# look at crs
+
+st_crs(tbs_sites_sf)
+
+# look at sf class
+
+tbs_sites_sf
+
+# plot the geometry
+
+plot(tbs_sites_sf$geom)
+
+```
+
+Now we can save our feature as in spatial format
+
+```{r}
+# save to geopackage
+
+st_write(tbs_sites_sf, "data/data.gpkg", layer = "tbs_sites", delete_layer = TRUE)
+
+# have a look at content
+
+st_layers("data/data.gpkg",do_count = TRUE)
+```
+
+## Attribute operations
+
+Vector attribute store non-spatial information about feature e.g. site type, size or height.
+
+Therefore, many operation that we perform on data frames can be also applied to sf features.
+
+It is important to note that in R we have paradigms:
+
+Let's start with data
+
+```{r}
+
+rm(list = ls())
+
+# look up layers
+st_layers("data/data.gpkg")
+
+
+# read sites
+sites = st_read("data/data.gpkg", layer = "tbs_sites")
+
+# glimpse
+glimpse(sites)
+
+
+```
+
+Selecting columns
+
+```{r}
+# r base
+sites[,c("id","size_ha","period")]
+
+
+# tidyverse - select function
+select(sites, id, size_ha, period)
+
+# did you notice that geom column ist "sticky"?
+```
+
+Selecting rows
+
+```{r}
+# r base
+sites[sites$period == "Late Bronze Age",]
+
+# tidyverse - filter function keeps rows matching given criteria
+filter(sites, period == "Late Bronze Age")
+
+
+```
+
+Pipe
+
+The pipe operator ( `%>%` from dplyr or `I>` from base R) takes the output from a previous code and pass it as a first argument to next function
+
+```{r}
+
+sites_lba = sites 
+  filter(period == "Late Bronze Age") %>% 
+  select(id, size_ha, period)
+  
+
+```
+
+::: callout-tip
+`%>%` vs `I>` - [The new R pipe \| R-bloggers](https://www.r-bloggers.com/2021/05/the-new-r-pipe/)
+:::
+
+Aggregating attributes
+
+```{r}
+
+# base r - aggregate()
+aggregate(size_ha ~ period, FUN = sum, data = sites)
+
+# tidyverse - group_by() summarize()
+sites %>% 
+  group_by(period) %>% 
+  summarise(
+    total_area = sum(size_ha)
+  )
+
+# is it sticky ?
+sites %>% 
+  group_by(period) %>% 
+  summarise(
+    total_area = sum(size_ha),
+    n = n()
+  ) %>% 
+  st_drop_geometry() # drop geometry 
+
+```
+
+## Spatial operations
+
+For next part of the lesson we will create a grid with squares 2500m x 2500m (6.25km\^2)
+
+```{r}
+
+# tessellation is create using st_make_grid funtion
+grid_sfc = st_make_grid(sites, cellsize = 2500)
+
+
+# this makes a sfc_POLYGON so we are going to convert it to sf 
+grid_sf = st_sf(tbs_grid_sfc)
+
+# change column name
+st_geometry(grid_sf) <- "geom"
+
+# add unique id to grid
+grid_sf$grid_id = 1:nrow(tbs_grid_sf)
+
+
+```
+
+Plot data
+
+```{r}
+# plot
+tm_shape(grid_sf) +
+  tm_borders() +
+  tm_text("grid_id") +
+tm_shape(sites) +
+  tm_symbols(col="blue")
+```
+
+Spatial subsetting
+
+Subset one object based on its relation in space to another object.
+
+```{r}
+
+# subset
+grid_with_sites1 = grid_sf[sites,]
+
+# plot
+tm_shape(grid_with_sites1) +
+  tm_borders()
+
+```
+
+the command x\[y,\] subsets fetures of target x using features of source y.
+
+By default it is using "*intersects*" topological relation.
+
+However, sf provides many more ways to establish relation between pairs of geometry sets.
+
+They are called geometry binary predicates.
+
+-   `st_intersects()`
+
+-   `st_disjoint()`
+
+-   `st_touches()`
+
+-   `st_crosses()`
+
+-   `st_within()`
+
+-   `st_contains()`
+
+-   `st_contains_properly()`
+
+-   `st_overlaps()`
+
+-   `st_equals()`
+
+-   `st_covers()`
+
+-   `st_covered_by()`
+
+-   `st_equals_exact()`
+
+-   `st_is_within_distance()`
+
+Let's go back to our previous example. We will use a topological operator `st_interesects()` to return sgbp object (sparse geometry binary operator). Then we will create a logical vector (TRUE if features intersect and FALSE if they don't) to subset the grid.
+
+( <https://r.geocompx.org/spatial-operations.html#spatial-subsetting>)
+
+```{r}
+# we will use topological operator 
+sel_sgbp = st_intersects(x = grid_sf, y = sites)
+
+sel_sgbp
+
+sel_logical = lengths(sel_sgbp) > 0
+
+grid_with_sites2 = grid_sf[sel_logical,]
+
+# plot
+tm_shape(grid_with_sites2) +
+  tm_borders()
+
+
+
+```
+
+Third method using `st_filter()`
+
+```{r}
+# subset
+grid_with_sites3 = grid_sf %>% 
+  st_filter(y = sites, .predicate = st_intersects)
+
+# plot
+tm_shape(grid_with_sites3) +
+  tm_borders()
+
+```
+
+Point in Polygon
+
+Method 1 - using sparse geometry binary operator
+
+```{r}
+
+# we can assign this list of count of points back to our grid 
+grid_sf$sites_count = lengths(st_intersects(grid_sf, sites))
+
+# plot
+tm_shape(grid_sf) +
+  tm_polygons("sites_count")
+
+# filter out grids without sites 
+tm_shape(grid_sf[grid_sf$sites_count > 0,]) +
+  tm_polygons("sites_count")
+
+
+
+```
+
+Method 2 - using spatial join
+
+```{r}
+
+# make a spatial joine
+grid_join = st_join(grid_sf, sites)
+
+# summarize the join by grid id
+grid_sum = grid_join %>%
+  group_by(grid_id) %>%
+  summarize(
+    count = n(),
+    total_area  = sum(size_ha)
+  ) %>% 
+  filter(!is.na(total_area)) # deal with NA values
+
+# have a look
+grid_sum
+
+```
+
+Plot the last example
+
+```{r}
+# interactive mode
+tmap_mode(mode = c("view"))
+
+# tmap converting sites
+tm_shape(grid_sum) +
+  tm_fill(col = "count",
+          style = "jenks",
+          convert2density = TRUE,
+          title= "Sites per km2"
+          ) + 
+  tm_borders(alpha=.8, col = "white")
+
+```
+
+## Geometry operations
+
+Data
+
+```{r}
+
+# clear environment
+rm(list = ls())
+
+# load sites again
+
+sites = st_read("data/data.gpkg", layer = "tbs_sites")
+
+
+```
+
+Buffer
+
+```{r}
+
+# filter sites
+
+sites_ltm = sites[sites$period == "Late Third Millennium",]
+
+sites_buff_2km = st_buffer(sites_ltm, dist = 2000)
+
+plot(sites_buff_2km$geom)
+
+
+
+```
+
+Union
+
+```{r}
+
+# union
+sites_buff_2km_union = st_union(sites_buff_2km)
+
+# plot
+plot(sites_buff_2km_union)
+
+# create sf object
+agri_area = st_sf(sites_buff_2km_union)
+
+# name geom column
+st_geometry(agri_area) = "geom"
+
+# calcualte area - it returns m^2
+agri_area$area = st_area(agri_area)
+
+# we can convert it to km
+agri_area$area = units::set_units(st_area(agri_area), km^2)
+
+
+```
+
+## Saving Data
+
+geopackage
+
+```{r}
+
+write_sf(agri_area, "data/data.gpkg", layer = "agri_area_ltm", delete_layer = TRUE)
+
+```
+
+shapefile
+
+```{r}
+
+write_sf(agri_area, "data/agri_area_ltm.shp")
+
+```
+
+## Voronoi
+
+Voronoi Polygons
+
+```{r}
+
+# DATA ----
+
+rm(list = ls())
+
+# sites
+sites = st_read("data/data.gpkg", layer = "tbs_sites")
+
+# sites ltm
+sites_ltm = sites[sites$period == "Late Third Millennium",]
+
+# bbox of all sits
+
+bbox = st_bbox(sites)
+
+bbox_sfc = st_as_sfc(bbox)
+
+# VORONOI ----
+
+# method 1
+voronoi <- sites_ltm %>%  # consider the master points
+  st_geometry() %>% # ... as geometry only (= throw away the data items)
+  st_union() %>% # unite them ...
+  st_voronoi() %>% # ... and perform the voronoi tessellation
+  st_collection_extract() %>% # select the polygons
+  st_sf(crs = 32637) %>% # set metric crs
+  st_join(sites) %>% # & re-connect the data items
+  st_intersection(bbox_sfc) # limit to bounding box boundaries
+
+# plot
+# mode
+
+tmap_mode("plot")
+tm_shape(voronoi) +
+  tm_borders() +
+tm_shape(sites_ltm) +
+  tm_dots()
+
+# method 2
+# install.packages("deldir")
+# install.packages("dismo")
+
+library(dismo)
+
+voronoi_int = voronoi(st_coordinates(sites_ltm),ext = bbox)
+
+voronoi_int = st_as_sf(voronoi_int) %>% st_set_crs(st_crs(sites_ltm))
+
+voronoi_int = voronoi_int %>%  st_intersection(bbox_sfc)
+
+
+# plot
+tm_shape(voronoi_int) +
+  tm_borders() +
+  tm_shape(sites_ltm) +
+  tm_symbols()
+```

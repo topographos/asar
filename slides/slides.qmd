@@ -176,3 +176,49 @@ Historical Background
 ![Source: Roelandt N, Nowosad J, Getting Started with R and R-spatial, workshop FOSS4G2022 Fig 2.4.](https://bakaniko.github.io/foss4g2022-getting-started-rspatial/figs/terra-libs.png)
 
 ## Coding Time ! - Lesson 1
+
+## Vector - analysis
+
+#### Learning Objectives
+
+-   learn about simple feature package
+
+-   deal with coordinate reference system
+
+-   create vector objects
+
+-   manipulate vector objects
+
+#### Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
+
+## Vector analysis
+
+![Source (https://r.geocompx.org/spatial-class.html#intro-sf)](https://r.geocompx.org/figures/sf-classes.png)
+
+## Vector analysis
+
+![Source (https://r-spatial.github.io/sf/articles/sf1.html) NOTE: update the image](https://r-spatial.github.io/sf/articles/sf_xfig.png)
+
+## point-in-polygon (PIP) 
+
+![](assets/pip.png)
+
+
+## buffer geometries
+
+![](assets/buffer.png)
+
+## dissolve geometries
+
+![](assets/union.png)
+
+
+## voronoi polygons
+
+![](assets/voronoi.png)
+
+## Coding Time ! - Lesson 2
+
+
