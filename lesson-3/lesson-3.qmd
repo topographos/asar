@@ -1,0 +1,381 @@
+---
+title: "Archaeological Spatial Analysis in R"
+subtitle: "Lesson 2"
+author:
+  - name: Michal Michalski
+    email: michal.m.michalski@durham.ac.uk
+    affiliations: Durham University
+format: 
+  html:
+    code-fold: false
+    toc: true
+    code-overflow: wrap
+editor: visual
+execute: 
+  warning: false
+theme: cosmo
+---
+
+## Learning Objectives
+
+-   learn about raster classes in R
+
+-   deal with coordinate reference system
+
+-   create raster data
+
+-   manipulate raster data
+
+## Introduction
+
+Raster data hold information within a cell. The information can be numeric or categorical. We can combine into one raster object multiple layers to hold multiple levels of information. For example, each layer representing different time of the same area. If the layers contains spectral information they are called bands. Each bands represent a different wavelength range of electromagnetic spectrum.
+
+Terrain Characteristics
+
+Terrain Characteritsits are calculated from digital elelvation model and may include slope, aspect, topographic position index or landforms. We will be intresded in TPI (Topographic Postion Index). is a diffrence between the elevation of a cell and the mean height of surrounding cells. values above 0 indicates locations higher than average. values around 0 indicates flat locations. values below 0 indicates locations lower than average.
+
+NDVI Different objects return different amount of energy in different wavelenghts of the electromagnetic spectrum. Normalized Difference Vegetation Index describes density and health of vegetation. It is a ratio between Red and Near Infrared reluctance. The values range between -1 and 1, where water having negative values, bare soil close to 0 dry vegetation low values and health vegetation high values approaching 1.
+
+## Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.3,3.3, 4.3 and 5.2 - [link](https://r.geocompx.org/)
+
+## Packages
+
+```{r}
+# install.packages("RStoolbox)
+# load packages
+library(terra) # raster 
+library(tmap) # mapping
+library(RStoolbox)
+```
+
+## Raster Basic
+
+Matrix
+
+```{r}
+# create matrix - two dimensional data structure
+m = matrix(1:9, nrow = 3, ncol = 3)
+
+# check for attributes
+attributes(m)
+
+# check for dimension
+dim(m)
+
+```
+
+Raster from scratch
+
+```{r}
+
+# create spatial raster 
+r <- rast(ncol=3, nrow=3, xmin=-150, xmax=-120, ymin=20, ymax=50, vals = 1:9)
+
+# plot
+plot(r)
+
+```
+
+Reading raster file
+
+```{r}
+
+dem = rast("../data/rast/dem.tif")
+
+plot(dem)
+```
+
+Summarizing Raster
+
+```{r}
+
+
+class(dem) # class
+
+summary(dem) #descriptive statistics
+
+global(dem, fun = "mean") # custom e.g. mean, sd 
+
+dim(dem) # dimensions
+
+ncell(dem) # number of cells
+
+nrow(dem) # number of rows
+
+ncol(dem) # number of columns
+
+ext(dem) # spatial extension
+
+res(dem) # raster resolution
+
+crs(dem) # raster coordinate system
+```
+
+histogram
+
+```{r}
+
+hist(dem) # histogram
+
+```
+
+## Reprojecting
+
+-   **crs()**
+
+-   **project()**
+
+```{r}
+
+crs(dem, describe = TRUE)
+
+dem_WGS84 = project(dem, "EPSG:4326" )
+```
+
+## Map Algebra
+
+-   local
+
+-   focal
+
+-   zonal
+
+-   global
+
+### Local
+
+```{r}
+
+
+plot(dem * 100)
+
+plot(dem >= 400)
+
+
+```
+
+It is possible to change the values of raster by reclassifying them using classify() function.The first step is to create a plain matrix where the first and second columns list the starting and ending values of the range of input values that are to be reclassified, and where the third column lists the new raster cell values.
+
+```{r}
+
+m <- c(300, 400, 1, 400 , 500,  2)
+
+m <- matrix(m, ncol=3, byrow = T)
+m
+```
+
+`Paramerer right = TRUE`, the intervals are closed on the right (and open on the left), (300, 400\], closed means that second column of the matrix is inclusive.
+
+```{r}
+
+dem_reclass = classify(dem, m, right = TRUE )
+
+tm_shape(dem_reclass) +
+    tm_raster(style = "cat")
+
+```
+
+Raster Attribute Table
+
+```{r}
+# create raster attribute table
+levels(dem_reclass) = data.frame(value = c(1, 2), 
+                                  landform = c("plain", "plateou"))
+
+# return the thebale for categorical raster
+cats(dem_reclass)
+
+# map
+tm_shape(ndvi_reclass) +
+    tm_raster(palette = "-Greens")
+```
+
+### Focal
+
+```{r}
+
+# function focal
+dem_focal <- focal(dem, w=matrix(1,nrow=7,ncol=7), fun=mean)
+
+tm_shape(dem_focal) +
+    tm_raster()
+```
+
+Contours
+
+```{r}
+
+contours <- as.contour(dem_focal) %>% st_as_sf()
+
+tm_shape(dem_focal) +
+  tm_raster() +
+  tm_shape(contours) +
+  tm_lines() +
+  tm_text("level", size = 0.6, along.lines = TRUE, overwrite.lines = TRUE)
+
+```
+
+### Zonal
+
+```{r}
+
+# categorical raster
+geology = st_read("../data/vect/data.gpkg", layer = "geology")
+
+# rasterize vector
+geology.ras = rasterize(vect(geology), dem, "SEDIMENTS")
+
+# plot
+map1 = tm_shape(dem) +
+  tm_raster(palette = "Greens")
+
+map2 = tm_shape(geology.ras) +
+  tm_raster()
+
+tmap_arrange(map1, map2)
+
+# zonal statistics
+zonal(dem,geology.ras, fun = "max")
+
+
+```
+
+### Global
+
+Distance
+
+```{r}
+
+rivers = st_read("../data/vect/data.gpkg", layer = "rimes_rivers", quiet = TRUE)
+
+rivers_vect = vect(rivers)
+
+dist = distance(dem,rivers_vect)
+
+tm_shape(dist) +
+  tm_raster(style = "cont") +
+  tm_shape(rivers) +
+  tm_lines(col = "#80c5de")
+```
+
+## Terrain Characteristics
+
+```{r}
+
+# calculate terrain characteristics - creates multiple layers
+terrain_char <- terra::terrain(dem, c('slope', 'aspect', 'TPI', 'TRI'))
+
+terrain_char
+
+tpi = terrain_char$TPI
+
+tpi
+```
+
+## Spectral Indices
+
+Read in Landsat data.
+
+```{r}
+
+# landsat bands
+# Blue
+blue <- rast("../data/rast/landsat_tbs/band_2.tif")
+
+# Green
+green <- rast("../data/rast/landsat_tbs/band_3.tif")
+
+# Red
+red <- rast("../data/rast/landsat_tbs/band_4.tif")
+
+# Near Infrared (NIR)
+near.infrared <- rast("../data/rastlandsat_tbs/band_5.tif")
+
+```
+
+Calculate Spectral Indices
+
+Raster Maths
+
+```{r}
+
+# Normalized Difference Vegetation Index (NDVI) 
+# NDVI = (infrared - red) / (infrared + red)
+ndvi = (near.infrared - red) / (near.infrared + red)
+
+plot(ndvi)
+
+```
+
+RStoolbox - a dedicated
+
+```{r}
+
+# stack
+landsat = c(blue,green,red,near.infrared)
+
+#compute indicses
+indices = spectralIndices(landsat, red = "band_4", nir = "band_5", indices = c("NDVI","MSAVI"))
+
+# indices are returned in "old" raster format - convert to SpatRaster
+indices = rast(indices)
+
+#plot
+plot(indices)
+
+```
+
+## GIS Bridge
+
+```{r}
+
+# install.packages("whitebox")
+# whitebox::install_whitebox()
+library(whitebox)
+
+# check geomorphons
+?wbt_geomorphons
+
+# run geomorphons land classifications
+whitebox::wbt_geomorphons(
+  dem = "../data/rast/dem.tif",
+  output = "../data/rast/geomorphons.tif"
+)
+
+```
+
+Map
+
+```{r}
+
+# read raster file
+geomorphons = rast("../data/rast/geomorphons.tif")
+
+# plot
+tm_shape(geomorphons) +
+  tm_raster(style = "cat")
+
+```
+
+## Writing Raster
+
+The writeRaster() function saves SpatRaster objects to files on disk.
+
+```{r}
+
+
+# distance
+terra::writeRaster()
+
+# tpi
+terra::writeRaster()
+
+# ndvi
+terra::writeRaster()
+
+# geomorphons
+terra::writeRaster(geomorph, )
+
+```

@@ -185,6 +185,7 @@ plot(st_geometry(rivers), col = "#80c5de")
 #read
 geology = st_read("../data/vect/data.gpkg", layer = "geology")
 
+raster
 # glimpse
 # head(geology, n = 3)
 

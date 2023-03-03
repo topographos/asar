@@ -201,10 +201,9 @@ Historical Background
 
 ![Source (https://r-spatial.github.io/sf/articles/sf1.html) NOTE: update the image](https://r-spatial.github.io/sf/articles/sf_xfig.png)
 
-## point-in-polygon (PIP) 
+## point-in-polygon (PIP)
 
 ![](assets/pip.png)
-
 
 ## buffer geometries
 
@@ -214,11 +213,50 @@ Historical Background
 
 ![](assets/union.png)
 
-
 ## voronoi polygons
 
 ![](assets/voronoi.png)
 
 ## Coding Time ! - Lesson 2
 
+## Raster - analysis
 
+#### Learning Objectives
+
+-   learn about raster class in terra package
+
+-   deal with coordinate reference system
+
+-   create raster objects
+
+-   manipulate raster objects
+
+#### Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
+
+## Raster
+
+![](assets/raster.png)
+
+## Map Algebra
+
+![](assets/map_algebra.png)
+
+## Terrain Characterisitcs
+
+![](assets/tpi.png)
+
+![Weiss, A. (2001) : Topographic Position and Landforms Analysis, Poster Presentation, ESRI Users Conference, San Diego, CA](http://www.jennessent.com/downloads/tpi-poster-tnc_18x22.pdf)
+
+## Spectral Indices
+
+![](assets/ndvi.png)
+
+## GIS Bridges
+
+Whitebox <https://www.whiteboxgeo.com/>
+
+![Geomorohons (Source:https://grass.osgeo.org/grass82/manuals/r.geomorphon.html)](https://grass.osgeo.org/grass82/manuals/legend.png)
+
+## Coding Time ! - Lesson 3

@@ -57,11 +57,21 @@ Readings
 
 Lessons
 
--   Lesson 2 - Vector Analysis - [link](https://topographos.github.io/asar/lesson-1/lesson-2.html)
+-   Lesson 2 - Vector Analysis - [link](https://topographos.github.io/asar/lesson-2/lesson-2.html)
 
 Readings
 
 -   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
+
+**Friday 3rd March**
+
+Lessons
+
+-   Lesson 3 - Raster Analysis - [link](https://topographos.github.io/asar/lesson-3/lesson-3.html)
+
+Readings
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.3, 3.3, 4.3 and 5.3 - [link](https://r.geocompx.org/)
 
 ### Assessment
 
@@ -69,6 +79,10 @@ The summative deadline for project delivery will be **12pm, Monday 24th April 20
 
 ### Resources
 
-[Data Analysis and Visualization in R for Archaeologists](https://carpentries-incubator.github.io/R-archaeology-lesson/index.html)
+[CRAN Task View: Archaeological Science](https://github.com/benmarwick/ctv-archaeology)
 
 [CRAN Task View: Archaeological Science](https://github.com/benmarwick/ctv-archaeology)
+
+[Elegant and informative maps with tmap](https://r-tmap.github.io/tmap-book/)
+
+[Data Analysis and Visualization in R for Archaeologists](https://carpentries-incubator.github.io/R-archaeology-lesson/index.html)

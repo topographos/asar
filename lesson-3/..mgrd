@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAGA_METADATA>
+  <DATABASE></DATABASE>
+  <SOURCE></SOURCE>
+  <HISTORY saga-version="7.3.0">
+    <TOOL library="ta_hydrology" id="15" name="SAGA Wetness Index">
+      <OPTION type="grid_system" id="PARAMETERS_GRID_SYSTEM" name="Grid system">
+        <CELLSIZE>83.67466920980935</CELLSIZE>
+        <XMIN>627832.1451498637</XMIN>
+        <XMAX>657369.3033809264</XMAX>
+        <YMIN>4052886.4442</YMIN>
+        <YMAX>4083511.37313079</YMAX>
+      </OPTION>
+      <OPTION type="double" id="SUCTION" name="Suction">10.000000</OPTION>
+      <OPTION type="choice" id="AREA_TYPE" name="Type of Area" index="0">total catchment area</OPTION>
+      <OPTION type="choice" id="SLOPE_TYPE" name="Type of Slope" index="0">local slope</OPTION>
+      <OPTION type="double" id="SLOPE_MIN" name="Minimum Slope">0.000000</OPTION>
+      <OPTION type="double" id="SLOPE_OFF" name="Offset Slope">0.100000</OPTION>
+      <OPTION type="double" id="SLOPE_WEIGHT" name="Slope Weighting">1.000000</OPTION>
+      <INPUT type="grid" id="DEM" name="Elevation" system="PARAMETERS_GRID_SYSTEM">
+        <TOOL library="io_gdal" id="0" name="Import Raster">
+          <OPTION type="file" id="FILES" name="Files">"/Users/michalmichalski/Documents/asar/data/rast/dem.tif"</OPTION>
+          <OPTION type="choice" id="MULTIPLE" name="Multiple Bands Output" index="2">automatic</OPTION>
+          <OPTION type="text" id="SELECTION" name="Select from Multiple Bands"/>
+          <OPTION type="boolean" id="TRANSFORM" name="Transformation">true</OPTION>
+          <OPTION type="choice" id="RESAMPLING" name="Resampling" index="3">B-Spline Interpolation</OPTION>
+          <OUTPUT type="grid_list" id="GRIDS" name="Grids">dem</OUTPUT>
+        </TOOL>
+      </INPUT>
+      <OUTPUT type="grid" id="TWI" name="Topographic Wetness Index">Topographic Wetness Index</OUTPUT>
+    </TOOL>
+  </HISTORY>
+  <FILE></FILE>
+  <DESCRIPTION></DESCRIPTION>
+  <PROJECTION>
+    <OGC_WKT>PROJCS["WGS 84 / UTM zone 37N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",39],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","32637"]]</OGC_WKT>
+    <PROJ4>+proj=utm +zone=37 +datum=WGS84 +units=m +no_defs</PROJ4>
+    <EPSG>-1</EPSG>
+  </PROJECTION>
+</SAGA_METADATA>
