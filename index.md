@@ -79,10 +79,15 @@ The summative deadline for project delivery will be **12pm, Monday 24th April 20
 
 ### Resources
 
-[CRAN Task View: Archaeological Science](https://github.com/benmarwick/ctv-archaeology)
+ 
+[Geocomputation with R - book club](https://github.com/r4ds/bookclub-geocompr)
+ 
+[R for Data Science - book club ](https://github.com/r4ds/bookclub-r4ds)
+
+[CRAN Task View: Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
 
 [CRAN Task View: Archaeological Science](https://github.com/benmarwick/ctv-archaeology)
-
-[Elegant and informative maps with tmap](https://r-tmap.github.io/tmap-book/)
 
 [Data Analysis and Visualization in R for Archaeologists](https://carpentries-incubator.github.io/R-archaeology-lesson/index.html)
+
+[Elegant and informative maps with tmap](https://r-tmap.github.io/tmap-book/)

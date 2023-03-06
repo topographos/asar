@@ -16,7 +16,7 @@ execute:
 theme: cosmo
 ---
 
-Learning Objectives
+## Learning Objectives
 
 -   learn about R and RStudio
 
@@ -630,3 +630,9 @@ write.csv(sites, "../data/sites.csv", row.names = FALSE)
 1.  Read CSV file
 2.  Select sites only from Iron Age
 3.  Export data frame as new file called `sites_iron_age.csv`
+
+## Resources
+
+[Our Coding Club Tutorials - Introduction to R: Part 1](https://ourcodingclub.github.io/tutorials/intro-to-r/)
+
+[Our Coding Club Tutorials - Introduction to R: Part 2](https://ourcodingclub.github.io/tutorials/troubleshooting/)

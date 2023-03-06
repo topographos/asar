@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michal Michalski">
+
+<title>Archaeological Spatial Analysis in R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="lesson-2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lesson-2_files/libs/quarto-html/quarto.js"></script>
+<script src="lesson-2_files/libs/quarto-html/popper.min.js"></script>
+<script src="lesson-2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lesson-2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lesson-2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lesson-2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lesson-2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lesson-2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lesson-2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="lesson-2_files/libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="lesson-2_files/libs/jquery-1.12.4/jquery.min.js"></script>
+<link href="lesson-2_files/libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="lesson-2_files/libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="lesson-2_files/libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="lesson-2_files/libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="lesson-2_files/libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="lesson-2_files/libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="lesson-2_files/libs/leaflet-binding-2.1.1/leaflet.js"></script>
+<script src="lesson-2_files/libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="lesson-2_files/libs/leaflet-providers-plugin-2.1.1/leaflet-providers-plugin.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#background-reading" id="toc-background-reading" class="nav-link" data-scroll-target="#background-reading">Background Reading</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#simple-features" id="toc-simple-features" class="nav-link" data-scroll-target="#simple-features">Simple Features</a></li>
+  <li><a href="#attribute-operations" id="toc-attribute-operations" class="nav-link" data-scroll-target="#attribute-operations">Attribute operations</a>
+  <ul class="collapse">
+  <li><a href="#selecting-columns" id="toc-selecting-columns" class="nav-link" data-scroll-target="#selecting-columns">Selecting columns</a></li>
+  <li><a href="#selecting-rows" id="toc-selecting-rows" class="nav-link" data-scroll-target="#selecting-rows">Selecting rows</a></li>
+  <li><a href="#pipe" id="toc-pipe" class="nav-link" data-scroll-target="#pipe">Pipe</a></li>
+  <li><a href="#aggregating-attributes" id="toc-aggregating-attributes" class="nav-link" data-scroll-target="#aggregating-attributes">Aggregating attributes</a></li>
+  </ul></li>
+  <li><a href="#spatial-operation" id="toc-spatial-operation" class="nav-link" data-scroll-target="#spatial-operation">Spatial operation</a>
+  <ul class="collapse">
+  <li><a href="#spatial-subsetting" id="toc-spatial-subsetting" class="nav-link" data-scroll-target="#spatial-subsetting"><strong>Spatial subsetting</strong></a></li>
+  </ul></li>
+  <li><a href="#geometry-operations" id="toc-geometry-operations" class="nav-link" data-scroll-target="#geometry-operations">Geometry operations</a></li>
+  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data">Saving Data</a></li>
+  <li><a href="#voronoi-polygons" id="toc-voronoi-polygons" class="nav-link" data-scroll-target="#voronoi-polygons">Voronoi Polygons</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Archaeological Spatial Analysis in R</h1>
+<p class="subtitle lead">Lesson 2</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    Michal Michalski 
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Durham University
+          </p>
+      </div>
+    </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="learning-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="learning-objectives">Learning Objectives</h2>
+<ul>
+<li><p>learn about simple feature package</p></li>
+<li><p>deal with coordinate reference system</p></li>
+<li><p>create vector data</p></li>
+<li><p>manipulate vector data</p></li>
+</ul>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This lesson introduce basics of working with vector data in R.</p>
+</section>
+<section id="background-reading" class="level2">
+<h2 class="anchored" data-anchor-id="background-reading">Background Reading</h2>
+<p>Please read and work through the code in the following chapters:</p>
+<ul>
+<li>Lovelace R, Nowosad K, Muenchow J, <em>Geocomputation with R,</em> Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - <a href="https://r.geocompx.org/">link</a></li>
+</ul>
+</section>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<p>Start with loading R packages that we will use in our class.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># vector representation</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># data manipulation</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap) <span class="co"># mapping</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(units) <span class="co"># units conversion</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="simple-features" class="level2">
+<h2 class="anchored" data-anchor-id="simple-features">Simple Features</h2>
+<p><code>{sf}</code> package is an R implementation of Open Geo-spatial Consortium (OGC) standard called Simple Features. It is a vector model representing world features as geometry types.</p>
+<p>The main geometry types are as follow:</p>
+<ul>
+<li><p>POINT</p></li>
+<li><p>LINESTRING</p></li>
+<li><p>POLYGON</p></li>
+<li><p>MULTIPOINT</p></li>
+<li><p>MULTILINESTRING</p></li>
+<li><p>MULTIPOLYGON</p></li>
+<li><p>GEOMETRYCOLLECTION</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://r.geocompx.org/figures/sf-classes.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Source (https://r.geocompx.org/spatial-class.html#intro-sf)</figcaption><p></p>
+</figure>
+</div>
+<p>There are three hierarchical classes in sf package:</p>
+<ul>
+<li><p><code>sfg</code> - a single geometry</p></li>
+<li><p><code>sfc</code> - a a list - column with geometry for each record</p></li>
+<li><p><code>sf</code> - a table with non-geometry and geometry attributes</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://r-spatial.github.io/sf/articles/sf_xfig.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Source (https://r-spatial.github.io/sf/articles/sf1.html) NOTE: update the image</figcaption><p></p>
+</figure>
+</div>
+<p>In addition, sf object can store information on dimension, bounding box and coordinate reference system.</p>
+<p>Now, we are going to construct a sf classes from scratch</p>
+<p>First, create a data frame with sites ( from lesson - 0).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a collection of same lenth vectors</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#site ids</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>site_id <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"THS_1_0_0"</span>, <span class="st">"THS_2_0_0"</span>, <span class="st">"THS_3_0_0"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># period of site</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>period <span class="ot">=</span>  <span class="fu">c</span>(<span class="st">"Iron Age"</span>, <span class="st">"Iron Age"</span>, <span class="st">"Bronze Age"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># site size in hectars</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>size_ha <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">18.0</span>, <span class="fl">5.6</span>, <span class="fl">7.2</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># construct df</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">&lt;-</span>  <span class="fu">data.frame</span>(site_id, size_ha, period)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In next step we will construct and add geometry attributes for our sites.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function st_point() creates a single point from numeric vectors</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># we need three points for each site record</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">2</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">=</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">=</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">6</span>))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># function st_sfc() creates a column</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>points_sfc <span class="ot">=</span> <span class="fu">st_sfc</span>(p1,p2,p3)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># function st_sf() will extend the df by adding geometry column</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>sites_sf <span class="ot">=</span> <span class="fu">st_sf</span>(sites, <span class="at">geometry =</span> points_sfc)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(sites_sf$geometry)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print(sites_sf)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># or using tmap</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(sites_sf) <span class="sc">+</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>(<span class="at">col =</span> <span class="st">"salmon"</span>) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_grid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>A very common task is to convert a table (e.g.&nbsp;in csv format) that contains columns with X and Y coordinate into a point dataset. It could be achieved using <code>st_as_sf()</code> package. We</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import the csv</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tbs_sites <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"../data/tbs_sites.csv"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># check structure</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tbs_sites)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   88 obs. of  12 variables:
+ $ fid       : int  1 3 4 7 8 9 10 11 12 13 ...
+ $ id        : chr  "TBS_1_0_0" "TBS_1_0_0" "TBS_1_0_0" "TBS_11_0_0" ...
+ $ size_ha   : num  45 45 24 0.394 0.394 ...
+ $ start_date: int  -900 -1600 -2550 -1200 -1600 -1200 -1600 -1200 -1200 -1200 ...
+ $ end_date  : int  -300 -1200 -2100 -550 -1200 -550 -1200 -550 -600 -600 ...
+ $ longitude : num  40.6 40.6 40.6 40.7 40.7 ...
+ $ latitude  : num  36.7 36.7 36.7 36.7 36.7 ...
+ $ source    : chr  "Ur and Wilkinson 2008" "Ur and Wilkinson 2008" "Ur and Wilkinson 2008" "Ur and Wilkinson 2008" ...
+ $ code      : chr  "TBS" "TBS" "TBS" "TBS" ...
+ $ period    : chr  "Iron Age" "Late Bronze Age" "Late Third Millennium" "Iron Age" ...
+ $ name      : chr  "Tell Beydar" "Tell Beydar" "Tell Beydar" "" ...
+ $ tell      : chr  "true" "true" "true" "" ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check first entries</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tbs_sites, <span class="at">n =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  fid        id size_ha start_date end_date longitude latitude
+1   1 TBS_1_0_0      45       -900     -300  40.58699 36.73775
+                 source code   period        name tell
+1 Ur and Wilkinson 2008  TBS Iron Age Tell Beydar true</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a useful command to check external software used by sf</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># sf::sf_extSoftVersion()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before continuing we will learn about Coordinate Reference System (CRS) of our data.</p>
+<p>It could be either geographic or projected. We can create a <code>crs</code> object it by passing an EPSG code to <code>st_crs()</code> function.</p>
+<p>EPSG stand for European Petroleum Survey Group responsible for maintaining a database of coordinate systems.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># provide the EPSG code using st_crs()</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>crs_wgs84 <span class="ot">=</span> <span class="fu">st_crs</span>(<span class="dv">4326</span>) <span class="co"># WGS84 has EPSG code 4326</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># it is a so colled crs object</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(crs_wgs84)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "crs"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(crs_wgs84)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 2
+ $ input: chr "EPSG:4326"
+ $ wkt  : chr "GEOGCRS[\"WGS 84\",\n    ENSEMBLE[\"World Geodetic System 1984 ensemble\",\n        MEMBER[\"World Geodetic Sys"| __truncated__
+ - attr(*, "class")= chr "crs"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># access the wkt element</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(crs_wgs84<span class="sc">$</span>wkt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GEOGCRS["WGS 84",
+    ENSEMBLE["World Geodetic System 1984 ensemble",
+        MEMBER["World Geodetic System 1984 (Transit)"],
+        MEMBER["World Geodetic System 1984 (G730)"],
+        MEMBER["World Geodetic System 1984 (G873)"],
+        MEMBER["World Geodetic System 1984 (G1150)"],
+        MEMBER["World Geodetic System 1984 (G1674)"],
+        MEMBER["World Geodetic System 1984 (G1762)"],
+        MEMBER["World Geodetic System 1984 (G2139)"],
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]],
+        ENSEMBLEACCURACY[2.0]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    USAGE[
+        SCOPE["Horizontal component of 3D system."],
+        AREA["World."],
+        BBOX[-90,-180,90,180]],
+    ID["EPSG",4326]]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># return user input as a number</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>crs_wgs84<span class="sc">$</span>epsg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4326</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PROJ string - old way - means packages / code was not updated</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>crs_wgs84<span class="sc">$</span>proj4string</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "+proj=longlat +datum=WGS84 +no_defs"</code></pre>
+</div>
+</div>
+<p>Now we can create simple feature object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a sf object</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># specify data frame - tbs_sites</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># specify column names with x an y</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># specify CRS</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>tbs_sites_sf <span class="ot">=</span> <span class="fu">st_as_sf</span>(tbs_sites, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tbs_sites_sf<span class="sc">$</span>geometry)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can transform our data to other projection using <code>st_transform()</code> function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># transform from geodetic to projected</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># provide the EPSG code using st_crs() - https://epsg.io/32637</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>UTM_Zone_37N <span class="ot">=</span> <span class="fu">st_crs</span>(<span class="dv">32637</span>) <span class="co"># IGRS_UTM_Zone_38N EPSG: 3891</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># transform sites from </span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>tbs_sites_sf <span class="ot">=</span> <span class="fu">st_transform</span>(tbs_sites_sf, UTM_Zone_37N)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># look at crs</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(tbs_sites_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:32637 
+  wkt:
+PROJCRS["WGS 84 / UTM zone 37N",
+    BASEGEOGCRS["WGS 84",
+        ENSEMBLE["World Geodetic System 1984 ensemble",
+            MEMBER["World Geodetic System 1984 (Transit)"],
+            MEMBER["World Geodetic System 1984 (G730)"],
+            MEMBER["World Geodetic System 1984 (G873)"],
+            MEMBER["World Geodetic System 1984 (G1150)"],
+            MEMBER["World Geodetic System 1984 (G1674)"],
+            MEMBER["World Geodetic System 1984 (G1762)"],
+            MEMBER["World Geodetic System 1984 (G2139)"],
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]],
+            ENSEMBLEACCURACY[2.0]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4326]],
+    CONVERSION["UTM zone 37N",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",0,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",39,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",0.9996,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",500000,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Engineering survey, topographic mapping."],
+        AREA["Between 36°E and 42°E, northern hemisphere between equator and 84°N, onshore and offshore. Djibouti. Egypt. Eritrea. Ethiopia. Georgia. Iraq. Jordan. Kenya. Lebanon. Russian Federation. Saudi Arabia. Somalia. Sudan. Syria. Turkey. Ukraine."],
+        BBOX[0,36,84,42]],
+    ID["EPSG",32637]]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># look at sf class</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>tbs_sites_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 88 features and 10 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4058444 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+First 10 features:
+   fid         id   size_ha start_date end_date                source code
+1    1  TBS_1_0_0 45.000000       -900     -300 Ur and Wilkinson 2008  TBS
+2    3  TBS_1_0_0 45.000000      -1600    -1200 Ur and Wilkinson 2008  TBS
+3    4  TBS_1_0_0 24.000000      -2550    -2100 Ur and Wilkinson 2008  TBS
+4    7 TBS_11_0_0  0.393999      -1200     -550 Ur and Wilkinson 2008  TBS
+5    8 TBS_11_0_0  0.393999      -1600    -1200 Ur and Wilkinson 2008  TBS
+6    9 TBS_13_0_0  1.812999      -1200     -550 Ur and Wilkinson 2008  TBS
+7   10 TBS_13_0_0  1.812999      -1600    -1200 Ur and Wilkinson 2008  TBS
+8   11 TBS_14_0_0  0.770000      -1200     -550 Ur and Wilkinson 2008  TBS
+9   12 TBS_16_0_0  0.797998      -1200     -600 Ur and Wilkinson 2008  TBS
+10  13 TBS_18_0_0  1.078999      -1200     -600 Ur and Wilkinson 2008  TBS
+                  period        name tell                 geometry
+1               Iron Age Tell Beydar true POINT (641692.6 4066955)
+2        Late Bronze Age Tell Beydar true POINT (641692.6 4066955)
+3  Late Third Millennium Tell Beydar true POINT (641692.6 4066955)
+4               Iron Age                  POINT (648513.2 4064927)
+5        Late Bronze Age                  POINT (648513.2 4064927)
+6               Iron Age                  POINT (653395.7 4068208)
+7        Late Bronze Age                  POINT (653395.7 4068208)
+8               Iron Age                  POINT (652959.5 4066898)
+9               Iron Age                  POINT (643729.7 4059990)
+10              Iron Age                  POINT (644743.6 4059082)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the geometry</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(tbs_sites_sf$geom)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># or plot with tmap and add grid to see grid reference values in metres</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(tbs_sites_sf) <span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>() <span class="sc">+</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_grid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now we can save our feature as in spatial format</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save to geopackage</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(tbs_sites_sf, <span class="st">"../data/vect/data.gpkg"</span>, <span class="at">layer =</span> <span class="st">"tbs_sites"</span>, <span class="at">delete_layer =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Deleting layer `tbs_sites' using driver `GPKG'
+Writing layer `tbs_sites' to data source `../data/vect/data.gpkg' using driver `GPKG'
+Writing 88 features with 10 fields and geometry type Point.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># have a look at content to see the layer</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_layers</span>(<span class="st">"../data/vect/data.gpkg"</span>,<span class="at">do_count =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Driver: GPKG 
+Available layers:
+     layer_name     geometry_type features fields              crs_name
+1   sites_point             Point       88     11 WGS 84 / UTM zone 37N
+2 sites_polygon     Multi Polygon      323      6 WGS 84 / UTM zone 37N
+3 survey_extent     Multi Polygon        1      2 WGS 84 / UTM zone 37N
+4   hollow_ways Multi Line String      568      4 WGS 84 / UTM zone 37N
+5           aoi           Polygon        1      5 WGS 84 / UTM zone 37N
+6       geology     Multi Polygon        7      1 WGS 84 / UTM zone 37N
+7  rimes_rivers Multi Line String        1      8 WGS 84 / UTM zone 37N
+8 agri_area_ltm     Multi Polygon        1      1 WGS 84 / UTM zone 37N
+9     tbs_sites             Point       88      9 WGS 84 / UTM zone 37N</code></pre>
+</div>
+</div>
+</section>
+<section id="attribute-operations" class="level2">
+<h2 class="anchored" data-anchor-id="attribute-operations">Attribute operations</h2>
+<p>Vector attributes store non-spatial information about feature such as site type, size or height.</p>
+<p>Therefore, many operation that we perform on data frames can be also applied to sf features.</p>
+<p>It is important to note that in R we have paradigms:</p>
+<p>Let’s start with data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># read sites</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"../data/vect/data.gpkg"</span>, <span class="at">layer =</span> <span class="st">"sites_point"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># glimpse</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sites, <span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 11 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 641692.6 ymin: 4066955 xmax: 641692.6 ymax: 4066955
+Projected CRS: WGS 84 / UTM zone 37N
+         id size_ha start_date end_date longitude latitude
+1 TBS_1_0_0      45       -900     -300  40.58699 36.73775
+2 TBS_1_0_0      45      -1600    -1200  40.58699 36.73775
+3 TBS_1_0_0      24      -2550    -2100  40.58699 36.73775
+                 source code                period        name tell
+1 Ur and Wilkinson 2008  TBS              Iron Age Tell Beydar TRUE
+2 Ur and Wilkinson 2008  TBS       Late Bronze Age Tell Beydar TRUE
+3 Ur and Wilkinson 2008  TBS Late Third Millennium Tell Beydar TRUE
+                      geom
+1 POINT (641692.6 4066955)
+2 POINT (641692.6 4066955)
+3 POINT (641692.6 4066955)</code></pre>
+</div>
+</div>
+<section id="selecting-columns" class="level3">
+<h3 class="anchored" data-anchor-id="selecting-columns">Selecting columns</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r base</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sites[,<span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"size_ha"</span>,<span class="st">"period"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 88 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4058444 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+First 10 features:
+           id   size_ha                period                     geom
+1   TBS_1_0_0 45.000000              Iron Age POINT (641692.6 4066955)
+2   TBS_1_0_0 45.000000       Late Bronze Age POINT (641692.6 4066955)
+3   TBS_1_0_0 24.000000 Late Third Millennium POINT (641692.6 4066955)
+4  TBS_11_0_0  0.393999              Iron Age POINT (648513.2 4064927)
+5  TBS_11_0_0  0.393999       Late Bronze Age POINT (648513.2 4064927)
+6  TBS_13_0_0  1.812999              Iron Age POINT (653395.7 4068208)
+7  TBS_13_0_0  1.812999       Late Bronze Age POINT (653395.7 4068208)
+8  TBS_14_0_0  0.770000              Iron Age POINT (652959.5 4066898)
+9  TBS_16_0_0  0.797998              Iron Age POINT (643729.7 4059990)
+10 TBS_18_0_0  1.078999              Iron Age POINT (644743.6 4059082)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tidyverse - select function</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(sites, id, size_ha, period)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 88 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4058444 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+First 10 features:
+           id   size_ha                period                     geom
+1   TBS_1_0_0 45.000000              Iron Age POINT (641692.6 4066955)
+2   TBS_1_0_0 45.000000       Late Bronze Age POINT (641692.6 4066955)
+3   TBS_1_0_0 24.000000 Late Third Millennium POINT (641692.6 4066955)
+4  TBS_11_0_0  0.393999              Iron Age POINT (648513.2 4064927)
+5  TBS_11_0_0  0.393999       Late Bronze Age POINT (648513.2 4064927)
+6  TBS_13_0_0  1.812999              Iron Age POINT (653395.7 4068208)
+7  TBS_13_0_0  1.812999       Late Bronze Age POINT (653395.7 4068208)
+8  TBS_14_0_0  0.770000              Iron Age POINT (652959.5 4066898)
+9  TBS_16_0_0  0.797998              Iron Age POINT (643729.7 4059990)
+10 TBS_18_0_0  1.078999              Iron Age POINT (644743.6 4059082)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># did you notice that geom column ist "sticky"?</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># check function st_drop_geometry()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-tip callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>When selecting columns from <code>sf</code> objects the geometry column is added automatically.</p>
+<p>Using function st_geometry() we can remove the geometry and return data.frame.</p>
+<pre><code>st_geometry(df) &lt;- NULL </code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="selecting-rows" class="level3">
+<h3 class="anchored" data-anchor-id="selecting-rows">Selecting rows</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r base</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>sites[sites<span class="sc">$</span>period <span class="sc">==</span> <span class="st">"Late Bronze Age"</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 22 features and 11 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4060933 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+First 10 features:
+           id   size_ha start_date end_date longitude latitude
+2   TBS_1_0_0 45.000000      -1600    -1200  40.58699 36.73775
+5  TBS_11_0_0  0.393999      -1600    -1200  40.66296 36.71843
+7  TBS_13_0_0  1.812999      -1600    -1200  40.71827 36.74722
+13 TBS_22_0_0  2.977999      -1600    -1200  40.69655 36.69236
+27 TBS_37_0_0  1.143000      -1600    -1400  40.65869 36.82285
+29 TBS_39_0_0  3.885999      -1600    -1200  40.59215 36.84689
+34 TBS_40_0_0  0.753000      -1600    -1200  40.59831 36.82681
+36 TBS_41_0_0  2.299999      -1600    -1200  40.60313 36.80451
+39 TBS_42_0_0  2.877998      -1600    -1200  40.59015 36.78839
+43 TBS_43_0_0  4.976385      -1600    -1200  40.55919 36.77488
+                  source code          period               name tell
+2  Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Beydar TRUE
+5  Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+7  Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+13 Ur and Wilkinson 2008  TBS Late Bronze Age      Bergul al-Buz TRUE
+27 Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Ghazal TRUE
+29 Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Fawqani TRUE
+34 Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Wastani TRUE
+36 Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Tahtani TRUE
+39 Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+43 Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Hassek TRUE
+                       geom
+2  POINT (641692.6 4066955)
+5  POINT (648513.2 4064927)
+7  POINT (653395.7 4068208)
+13 POINT (651564.9 4062087)
+27 POINT (647931.4 4076505)
+29   POINT (641952 4079071)
+34 POINT (642538.5 4076852)
+36 POINT (643009.7 4074385)
+39 POINT (641881.8 4072578)
+43 POINT (639143.3 4071034)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tidyverse - filter function keeps rows matching given criteria</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(sites, period <span class="sc">==</span> <span class="st">"Late Bronze Age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 22 features and 11 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4060933 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+First 10 features:
+           id   size_ha start_date end_date longitude latitude
+1   TBS_1_0_0 45.000000      -1600    -1200  40.58699 36.73775
+2  TBS_11_0_0  0.393999      -1600    -1200  40.66296 36.71843
+3  TBS_13_0_0  1.812999      -1600    -1200  40.71827 36.74722
+4  TBS_22_0_0  2.977999      -1600    -1200  40.69655 36.69236
+5  TBS_37_0_0  1.143000      -1600    -1400  40.65869 36.82285
+6  TBS_39_0_0  3.885999      -1600    -1200  40.59215 36.84689
+7  TBS_40_0_0  0.753000      -1600    -1200  40.59831 36.82681
+8  TBS_41_0_0  2.299999      -1600    -1200  40.60313 36.80451
+9  TBS_42_0_0  2.877998      -1600    -1200  40.59015 36.78839
+10 TBS_43_0_0  4.976385      -1600    -1200  40.55919 36.77488
+                  source code          period               name tell
+1  Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Beydar TRUE
+2  Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+3  Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+4  Ur and Wilkinson 2008  TBS Late Bronze Age      Bergul al-Buz TRUE
+5  Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Ghazal TRUE
+6  Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Fawqani TRUE
+7  Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Wastani TRUE
+8  Ur and Wilkinson 2008  TBS Late Bronze Age Tell Sekar Tahtani TRUE
+9  Ur and Wilkinson 2008  TBS Late Bronze Age               &lt;NA&gt;   NA
+10 Ur and Wilkinson 2008  TBS Late Bronze Age        Tell Hassek TRUE
+                       geom
+1  POINT (641692.6 4066955)
+2  POINT (648513.2 4064927)
+3  POINT (653395.7 4068208)
+4  POINT (651564.9 4062087)
+5  POINT (647931.4 4076505)
+6    POINT (641952 4079071)
+7  POINT (642538.5 4076852)
+8  POINT (643009.7 4074385)
+9  POINT (641881.8 4072578)
+10 POINT (639143.3 4071034)</code></pre>
+</div>
+</div>
+</section>
+<section id="pipe" class="level3">
+<h3 class="anchored" data-anchor-id="pipe">Pipe</h3>
+<p>The pipe operator ( <code>%&gt;%</code> from dplyr or <code>I&gt;</code> from base R) takes the output from a previous code and pass it as a first argument to next function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>sites_lba <span class="ot">=</span> sites <span class="sc">%&gt;%</span> <span class="co"># start with your data</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(period <span class="sc">==</span> <span class="st">"Late Bronze Age"</span>) <span class="sc">%&gt;%</span> <span class="co"># select ros from LBA</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, size_ha, period) <span class="co"># select only 3 columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here you can reas about dplyr pipe<code>%&gt;%</code> vs base pipe <code>I&gt;</code> - <a href="https://www.r-bloggers.com/2021/05/the-new-r-pipe/">The new R pipe | R-bloggers</a></p>
+</div>
+</div>
+</section>
+<section id="aggregating-attributes" class="level3">
+<h3 class="anchored" data-anchor-id="aggregating-attributes">Aggregating attributes</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># base r - aggregate()</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(size_ha <span class="sc">~</span> period, <span class="at">FUN =</span> sum, <span class="at">data =</span> sites)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 period   size_ha
+1              Iron Age 144.04514
+2                Khabur  30.39072
+3       Late Bronze Age  87.30782
+4 Late Third Millennium  63.17034</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tidyverse - group_by() summarize()</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>sites <span class="sc">%&gt;%</span> </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(period) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_area =</span> <span class="fu">sum</span>(size_ha)</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 4 features and 2 fields
+Geometry type: MULTIPOINT
+Dimension:     XY
+Bounding box:  xmin: 630104.6 ymin: 4058444 xmax: 653395.7 ymax: 4079071
+Projected CRS: WGS 84 / UTM zone 37N
+# A tibble: 4 × 3
+  period                total_area                                          geom
+  &lt;chr&gt;                      &lt;dbl&gt;                              &lt;MULTIPOINT [m]&gt;
+1 Iron Age                   144.  ((630104.6 4069768), (630315.1 4070078), (63…
+2 Khabur                      30.4 ((634427.7 4072256), (635597.3 4075260), (63…
+3 Late Bronze Age             87.3 ((630104.6 4069768), (630617.2 4070213), (63…
+4 Late Third Millennium       63.2 ((633070.9 4069936), (634263.1 4075977), (63…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># is it sticky ? remember st_drop_geometry()?</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>sites <span class="sc">%&gt;%</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(period) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_area =</span> <span class="fu">sum</span>(size_ha),</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="co"># drop geometry </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  period                total_area     n
+* &lt;chr&gt;                      &lt;dbl&gt; &lt;int&gt;
+1 Iron Age                   144.     45
+2 Khabur                      30.4     4
+3 Late Bronze Age             87.3    22
+4 Late Third Millennium       63.2    17</code></pre>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>We have just applied the <em>split-combine-apply</em> paradigm to our data. Please consult this <a href="https://carpentries-incubator.github.io/R-archaeology-lesson/03-dplyr.html#Split-apply-combine_data_analysis_and_the_summarize()_function">link</a> to read about it in more detail.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="spatial-operation" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-operation">Spatial operation</h2>
+<p>For next part of the lesson we will create a grid with squares 2500m x 2500m (6.25km^2).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tessellation is create using st_make_grid funtion</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>grid_sfc <span class="ot">=</span> <span class="fu">st_make_grid</span>(sites, <span class="at">cellsize =</span> <span class="dv">2500</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes a sfc_POLYGON so we are going to convert it to sf </span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>grid_sf <span class="ot">=</span> <span class="fu">st_sf</span>(grid_sfc)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co"># change column name</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(grid_sf) <span class="ot">&lt;-</span> <span class="st">"geom"</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co"># add unique id to grid</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>grid_sf<span class="sc">$</span>grid_id <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(grid_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plot data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_sf) <span class="sc">+</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_text</span>(<span class="st">"grid_id"</span>) <span class="sc">+</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(sites) <span class="sc">+</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>(<span class="at">col=</span><span class="st">"blue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="spatial-subsetting" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-subsetting"><strong>Spatial subsetting</strong></h3>
+<p>Subset one object based on its relation in space to another object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>grid_with_sites1 <span class="ot">=</span> grid_sf[sites,]</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_with_sites1) <span class="sc">+</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>the command x[y,] subsets features of target x using features of source y.</p>
+<p>By default it is using <em>intersects</em> topological relation.</p>
+<p>However, sf provides many more ways to establish relation between pairs of geometry sets.</p>
+<p>They are called geometry binary predicates.</p>
+<ul>
+<li><p><code>st_intersects()</code></p></li>
+<li><p><code>st_disjoint()</code></p></li>
+<li><p><code>st_touches()</code></p></li>
+<li><p><code>st_crosses()</code></p></li>
+<li><p><code>st_within()</code></p></li>
+<li><p><code>st_contains()</code></p></li>
+<li><p><code>st_contains_properly()</code></p></li>
+<li><p><code>st_overlaps()</code></p></li>
+<li><p><code>st_equals()</code></p></li>
+<li><p><code>st_covers()</code></p></li>
+<li><p><code>st_covered_by()</code></p></li>
+<li><p><code>st_equals_exact()</code></p></li>
+<li><p><code>st_is_within_distance()</code></p></li>
+</ul>
+<p>Let’s go back to our previous example. We will use a topological operator <code>st_interesects()</code> to return <code>sgbp</code> object (sparse geometry binary operator). Then we will create a logical vector (TRUE if features intersect and FALSE if they don’t) to subset the grid.</p>
+<p>( <a href="https://r.geocompx.org/spatial-operations.html#spatial-subsetting" class="uri">https://r.geocompx.org/spatial-operations.html#spatial-subsetting</a>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we will use topological operator </span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>sel_sgbp <span class="ot">=</span> <span class="fu">st_intersects</span>(<span class="at">x =</span> grid_sf, <span class="at">y =</span> sites)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="co"># have a look at sparse geometry binary predicate </span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>sel_sgbp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sparse geometry binary predicate list of length 90, where the predicate
+was `intersects'
+first 10 elements:
+ 1: (empty)
+ 2: (empty)
+ 3: (empty)
+ 4: (empty)
+ 5: (empty)
+ 6: 9, 10, 59, 60, 61, 62, 65
+ 7: (empty)
+ 8: 11
+ 9: (empty)
+ 10: (empty)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a logical vector</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>sel_logical <span class="ot">=</span> <span class="fu">lengths</span>(sel_sgbp) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use logical vector to subset grids with sites</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>grid_with_sites2 <span class="ot">=</span> grid_sf[sel_logical,]</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_with_sites2) <span class="sc">+</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Third method using <code>st_filter()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>grid_with_sites3 <span class="ot">=</span> grid_sf <span class="sc">%&gt;%</span> </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(<span class="at">y =</span> sites, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_with_sites3) <span class="sc">+</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Point in Polygon</p>
+<p>In the next task we want to count number of sites per grid.</p>
+<p>Method 1 - using sparse geometry binary operator</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we can assign this list of count of points back to our grid </span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>grid_sf<span class="sc">$</span>sites_count <span class="ot">=</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(grid_sf, sites))</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_sf) <span class="sc">+</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">"sites_count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter out grids without sites </span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_sf[grid_sf<span class="sc">$</span>sites_count <span class="sc">&gt;</span> <span class="dv">0</span>,]) <span class="sc">+</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">"sites_count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-19-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Method 2 - using spatial join we have more flexibility as we can use <code>split-combine-apply</code> to produce additional statistics such as sum of sites areas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a spatial join</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>grid_join <span class="ot">=</span> <span class="fu">st_join</span>(grid_sf, sites)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize the join by grid id</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>grid_sum <span class="ot">=</span> grid_join <span class="sc">%&gt;%</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(grid_id) <span class="sc">%&gt;%</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_area  =</span> <span class="fu">sum</span>(size_ha)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_area)) <span class="co"># deal with NA values</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="co"># have a look</span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(grid_sum)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 3 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 637604.6 ymin: 4058444 xmax: 650104.6 ymax: 4063444
+Projected CRS: WGS 84 / UTM zone 37N
+# A tibble: 6 × 4
+  grid_id count total_area                                                  geom
+    &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;                                         &lt;POLYGON [m]&gt;
+1       6     7     21.7   ((642604.6 4058444, 645104.6 4058444, 645104.6 40609…
+2       8     1      1.32  ((647604.6 4058444, 650104.6 4058444, 650104.6 40609…
+3      14     2      1.27  ((637604.6 4060944, 640104.6 4060944, 640104.6 40634…
+4      15     1      2.88  ((640104.6 4060944, 642604.6 4060944, 642604.6 40634…
+5      17     1      0.260 ((645104.6 4060944, 647604.6 4060944, 647604.6 40634…
+6      18     2      2.76  ((647604.6 4060944, 650104.6 4060944, 650104.6 40634…</code></pre>
+</div>
+</div>
+<p>Plot using tmap <code>view</code> mode.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># interactive mode</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="at">mode =</span> <span class="fu">c</span>(<span class="st">"view"</span>))</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="co"># tmap converting sites</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(grid_sum) <span class="sc">+</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"count"</span>,</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"jenks"</span>,</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">convert2density =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">title=</span> <span class="st">"Sites per km2"</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>          ) <span class="sc">+</span> </span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span>.<span class="dv">8</span>, <span class="at">col =</span> <span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-607833f6c2fa7866baf8" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-607833f6c2fa7866baf8">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addPolygons","args":[[[[{"lng":[40.595613166994,40.623575748356,40.6240492363519,40.596078508695,40.595613166994],"lat":[36.6609201538662,36.66054217323,36.6830704189233,36.6834487080319,36.6609201538662]}]],[[{"lng":[40.6515378039406,40.6794993247103,40.6799891034721,40.6520194376269,40.6515378039406],"lat":[36.6601576313811,36.6597665287112,36.6822941414054,36.6826855632505,36.6601576313811]}]],[[{"lng":[40.5401355104321,40.5681072637051,40.5685649668006,40.5405850570039,40.5401355104321],"lat":[36.6841855850213,36.6838204301908,36.7063491971323,36.7067146499016,36.6841855850213]}]],[[{"lng":[40.5681072637051,40.596078508695,40.5965443677293,40.5685649668006,40.5681072637051],"lat":[36.6838204301908,36.6834487080319,36.7059771716791,36.7063491971323,36.6838204301908]}]],[[{"lng":[40.6240492363519,40.6520194376269,40.652501606743,40.6245232507299,40.6240492363519],"lat":[36.6830704189233,36.6826855632505,36.705213404244,36.705598573921,36.6830704189233]}]],[[{"lng":[40.6520194376269,40.6799891034721,40.6804794267105,40.652501606743,40.6520194376269],"lat":[36.6826855632505,36.6822941414054,36.7048216630407,36.705213404244,36.6826855632505]}]],[[{"lng":[40.6799891034721,40.7079582248409,40.7084567015753,40.6804794267105,40.6799891034721],"lat":[36.6822941414054,36.6818961537868,36.7044233507102,36.7048216630407,36.6822941414054]}]],[[{"lng":[40.5126046474008,40.5405850570039,40.5410351033824,40.513046527619,40.5126046474008],"lat":[36.7070735296143,36.7067146499016,36.729243624582,36.7296027970456,36.7070735296143]}]],[[{"lng":[40.5685649668006,40.5965443677293,40.5970107446919,40.569023178764,40.5685649668006],"lat":[36.7063491971323,36.7059771716791,36.728505544781,36.7288778737028,36.7063491971323]}]],[[{"lng":[40.5965443677293,40.6245232507299,40.6249977920954,40.5970107446919,40.5965443677293],"lat":[36.7059771716791,36.705598573921,36.7281266381961,36.728505544781,36.7059771716791]}]],[[{"lng":[40.652501606743,40.6804794267105,40.6809702950519,40.652984311905,40.652501606743],"lat":[36.705213404244,36.7048216630407,36.7273490935895,36.7277411543346,36.705213404244]}]],[[{"lng":[40.7084567015753,40.7364334222814,40.7369406150889,40.7089557324687,40.7084567015753],"lat":[36.7044233507102,36.7040184676584,36.7265452430541,36.7269504563606,36.7044233507102]}]],[[{"lng":[40.569023178764,40.5970107446919,40.597477640179,40.5694819001812,40.569023178764],"lat":[36.7288778737028,36.728505544781,36.7510338273108,36.7514064598758,36.7288778737028]}]],[[{"lng":[40.5970107446919,40.6249977920954,40.6254728610552,40.597477640179,40.5970107446919],"lat":[36.728505544781,36.7281266381961,36.7506546117217,36.7510338273108,36.728505544781]}]],[[{"lng":[40.6249977920954,40.652984311905,40.6534675537298,40.6254728610552,40.6249977920954],"lat":[36.7281266381961,36.7277411543346,36.7502688134951,36.7506546117217,36.7281266381961]}]],[[{"lng":[40.7089557324687,40.7369406150889,40.7374483717584,40.7094553181587,40.7089557324687],"lat":[36.7269504563606,36.7265452430541,36.7490719269594,36.7494774707104,36.7269504563606]}]],[[{"lng":[40.4574939306126,40.485491656275,40.4859263347944,40.4579204236924,40.4574939306126],"lat":[36.7528311523912,36.7524848556574,36.7750142306693,36.775360809759,36.7528311523912]}]],[[{"lng":[40.485491656275,40.5134888991465,40.5139317625492,40.4859263347944,40.485491656275],"lat":[36.7524848556574,36.7521319744191,36.7746610617089,36.7750142306693,36.7524848556574]}]],[[{"lng":[40.597477640179,40.6254728610552,40.6259484582169,40.5979450547879,40.597477640179],"lat":[36.7510338273108,36.7506546117217,36.7731824944708,36.7735620192421,36.7510338273108]}]],[[{"lng":[40.6254728610552,40.6534675537298,40.6539513328354,40.6259484582169,40.6254728610552],"lat":[36.7506546117217,36.7502688134951,36.7727963816983,36.7731824944708,36.7506546117217]}]],[[{"lng":[40.4859263347944,40.5139317625492,40.514375118394,40.4863614966614,40.4859263347944],"lat":[36.7750142306693,36.7746610617089,36.7971900588893,36.7975435157374,36.7750142306693]}]],[[{"lng":[40.5419366978619,40.5699411316391,40.5704008737254,40.5423882471167,40.5419366978619],"lat":[36.7743013032384,36.7739349556248,36.7964633609237,36.7968300071622,36.7743013032384]}]],[[{"lng":[40.5699411316391,40.5979450547879,40.5984129891169,40.5704008737254,40.5699411316391],"lat":[36.7739349556248,36.7735620192421,36.7960901205482,36.7964633609237,36.7739349556248]}]],[[{"lng":[40.5979450547879,40.6259484582169,40.6264245841891,40.5984129891169,40.5979450547879],"lat":[36.7735620192421,36.7731824944708,36.7957102864167,36.7960901205482,36.7735620192421]}]],[[{"lng":[40.6259484582169,40.6539513328354,40.6544356498411,40.6264245841891,40.6259484582169],"lat":[36.7731824944708,36.7727963816983,36.795323858917,36.7957102864167,36.7731824944708]}]],[[{"lng":[40.681953669554,40.7099554592844,40.7104561564858,40.682446176973,40.681953669554],"lat":[36.7724036813184,36.7720043937319,36.7945312253975,36.7949308384436,36.7724036813184]}]],[[{"lng":[40.514375118394,40.5423882471167,40.5428402984857,40.5148189672489,40.514375118394],"lat":[36.7971900588893,36.7968300071622,36.8193586207816,36.8197189659343,36.7971900588893]}]],[[{"lng":[40.5984129891169,40.6264245841891,40.6269012395818,40.5988814437653,40.5984129891169],"lat":[36.7960901205482,36.7957102864167,36.8182379875326,36.8186181312026,36.7960901205482]}]],[[{"lng":[40.6264245841891,40.6544356498411,40.6549205053673,40.6269012395818,40.6264245841891],"lat":[36.7957102864167,36.795323858917,36.8178512451244,36.8182379875326,36.7957102864167]}]],[[{"lng":[40.682446176973,40.7104561564858,40.7109574104042,40.6829392320111,40.682446176973],"lat":[36.7949308384436,36.7945312253975,36.8170579656797,36.8174579043728,36.7949308384436]}]],[[{"lng":[40.4867971424333,40.5148189672489,40.5152633096829,40.4872332726686,40.4867971424333],"lat":[36.8200727108362,36.8197189659343,36.8422477828182,36.84260181594,36.8200727108362]}]],[[{"lng":[40.5148189672489,40.5428402984857,40.5432928525484,40.5152633096829,40.5148189672489],"lat":[36.8197189659343,36.8193586207816,36.8418871440706,36.8422477828182,36.8197189659343]}]],[[{"lng":[40.570861127029,40.5988814437653,40.5993504193334,40.57132189214,40.570861127029],"lat":[36.8189916757461,36.8186181312026,36.8411460511788,36.8415199000657,36.8189916757461]}]],[[{"lng":[40.6549205053673,40.6829392320111,40.6834328353003,40.6554059000351,40.6549205053673],"lat":[36.8178512451244,36.8174579043728,36.8399848790789,36.8403785402933,36.8178512451244]}]],[[{"lng":[40.5152633096829,40.5432928525484,40.5437459098852,40.5157081462659,40.5152633096829],"lat":[36.8422477828182,36.8418871440706,36.8644155770033,36.8647765095153,36.8422477828182]}]],[[{"lng":[40.57132189214,40.5993504193334,40.5998199164229,40.5717831696491,40.57132189214],"lat":[36.8415199000657,36.8411460511788,36.8636738804502,36.8640480338563,36.8415199000657]}]]],["X6","X8","X14","X15","X17","X18","X19","X23","X25","X26","X28","X30","X35","X36","X37","X40","X41","X42","X46","X47","X52","X54","X55","X56","X57","X59","X63","X66","X67","X69","X72","X73","X75","X78","X83","X85"],"grid_sum",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#FFFFFF","weight":1,"opacity":0.8,"fill":true,"fillColor":["#B74202","#FFF8C4","#FEDE86","#FFF8C4","#FFF8C4","#FEDE86","#FEAA38","#FFF8C4","#FEDE86","#EA6E13","#FEDE86","#FEDE86","#FEAA38","#EA6E13","#FFF8C4","#FEAA38","#EA6E13","#EA6E13","#FEAA38","#FFF8C4","#FFF8C4","#EA6E13","#FEDE86","#FFF8C4","#FEDE86","#FEAA38","#FEAA38","#FEAA38","#FFF8C4","#FFF8C4","#FEAA38","#FFF8C4","#FEDE86","#FEAA38","#FEDE86","#FEAA38"],"fillOpacity":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"dashArray":"none","smoothFactor":1,"noClip":false},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>6<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>7<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>1.1200116<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>8<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600074<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>14<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3199938<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>15<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1599997<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>17<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600053<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>18<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200164<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>19<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800335<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>23<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1599950<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>25<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200010<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>26<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>4<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.6400131<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>28<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200180<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>30<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200299<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>35<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800039<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>36<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>4<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.6400164<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>37<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600069<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>40<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800473<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>41<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>5<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.7999570<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>42<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>4<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.6399760<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>46<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800147<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>47<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600077<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>52<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1599948<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>54<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>5<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.8000008<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>55<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200058<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>56<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600057<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>57<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200171<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>59<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800432<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>63<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4799948<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>66<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800195<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>67<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600094<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>69<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1600152<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>72<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4799893<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>73<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>1<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.1599991<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>75<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3200091<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>78<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800392<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>83<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>2<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.3199998<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>85<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>count<\/nobr><\/td><td align=\"right\"><nobr>3<\/nobr><\/td><\/tr><tr><td style=\"color: #888888;\"><nobr>count_density<\/nobr><\/td><td align=\"right\"><nobr>0.4800160<\/nobr><\/td><\/tr><\/table><\/div>"],null,["6","8","14","15","17","18","19","23","25","26","28","30","35","36","37","40","41","42","46","47","52","54","55","56","57","59","63","66","67","69","72","73","75","78","83","85"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#FFF8C4","#FEDE86","#FEAA38","#EA6E13","#B74202"],"labels":["0.160 to 0.160","0.160 to 0.320","0.320 to 0.480","0.480 to 0.800","0.800 to 1.120"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"Sites per km2","extra":null,"layerId":"legend401","className":"info legend grid_sum","group":"grid_sum"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"grid_sum",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[36.6597665287112,36.8647765095153],"lng":[40.4574939306126,40.7374483717584]},"fitBounds":[36.6597665287112,40.4574939306126,36.8647765095153,40.7374483717584,[]]},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+</section>
+<section id="geometry-operations" class="level2">
+<h2 class="anchored" data-anchor-id="geometry-operations">Geometry operations</h2>
+<p>Let’s start with clearing environment and reading only the sites again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear environment</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load sites again</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"../data/vect/data.gpkg"</span>, <span class="at">layer =</span> <span class="st">"sites_point"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Buffer</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter sites</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>sites_ltm <span class="ot">=</span> sites[sites<span class="sc">$</span>period <span class="sc">==</span> <span class="st">"Late Third Millennium"</span>,]</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a><span class="co"># apply buffer to selected sites</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>sites_buff_2km <span class="ot">=</span> <span class="fu">st_buffer</span>(sites_ltm, <span class="at">dist =</span> <span class="dv">2000</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a><span class="co"># quick map</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sites_buff_2km<span class="sc">$</span>geom)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Union</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># union</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>sites_buff_2km_union <span class="ot">=</span> <span class="fu">st_union</span>(sites_buff_2km)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sites_buff_2km_union)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create sf object</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>agri_area <span class="ot">=</span> <span class="fu">st_sf</span>(sites_buff_2km_union)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="co"># name geom column</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(agri_area) <span class="ot">=</span> <span class="st">"geom"</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="co"># calcualte area - it returns m^2</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>agri_area<span class="sc">$</span>area <span class="ot">=</span> <span class="fu">st_area</span>(agri_area)</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="co"># we can convert it to km</span></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>agri_area<span class="sc">$</span>area <span class="ot">=</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_area</span>(agri_area), km<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="saving-data" class="level2">
+<h2 class="anchored" data-anchor-id="saving-data">Saving Data</h2>
+<p>Write the agricultural potential areas to geopackage.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(agri_area, <span class="st">"../data/vect/data.gpkg"</span>, <span class="at">layer =</span> <span class="st">"agri_area_ltm"</span>, </span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">delete_layer =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>or shapefile</p>
+</section>
+<section id="voronoi-polygons" class="level2">
+<h2 class="anchored" data-anchor-id="voronoi-polygons">Voronoi Polygons</h2>
+<p>Voronoi or Thiessen polygons are popular theoretical boundary models.</p>
+<p>The border is drawn where the distance between two points is equal.</p>
+<p>Below are two methods to compute the polygons in R.</p>
+<p>Please execute the below code. Try to do it line by line to inspect the code and result.</p>
+<p>Use help to learn about each</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA ----</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="co"># sites</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"../data/vect/data.gpkg"</span>, <span class="at">layer =</span> <span class="st">"sites_point"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a><span class="co"># sites ltm</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>sites_ltm <span class="ot">=</span> sites[sites<span class="sc">$</span>period <span class="sc">==</span> <span class="st">"Late Third Millennium"</span>,]</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a><span class="co"># bbox of all sits</span></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>bbox <span class="ot">=</span> <span class="fu">st_bbox</span>(sites)</span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>bbox_sfc <span class="ot">=</span> <span class="fu">st_as_sfc</span>(bbox)</span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a><span class="co"># VORONOI ----</span></span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a><span class="co"># method 1</span></span>
+<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a>voronoi <span class="ot">&lt;-</span> sites_ltm <span class="sc">%&gt;%</span>  <span class="co"># consider the master points</span></span>
+<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_geometry</span>() <span class="sc">%&gt;%</span> <span class="co"># ... as geometry only (= throw away the data items)</span></span>
+<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>() <span class="sc">%&gt;%</span> <span class="co"># unite them ...</span></span>
+<span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_voronoi</span>() <span class="sc">%&gt;%</span> <span class="co"># ... and perform the voronoi tessellation</span></span>
+<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_collection_extract</span>() <span class="sc">%&gt;%</span> <span class="co"># select the polygons</span></span>
+<span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_sf</span>(<span class="at">crs =</span> <span class="dv">32637</span>) <span class="sc">%&gt;%</span> <span class="co"># set metric crs</span></span>
+<span id="cb65-25"><a href="#cb65-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_join</span>(sites) <span class="sc">%&gt;%</span> <span class="co"># &amp; re-connect the data items</span></span>
+<span id="cb65-26"><a href="#cb65-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_intersection</span>(bbox_sfc) <span class="co"># limit to bounding box boundaries</span></span>
+<span id="cb65-27"><a href="#cb65-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-28"><a href="#cb65-28" aria-hidden="true" tabindex="-1"></a><span class="co"># plot mode</span></span>
+<span id="cb65-29"><a href="#cb65-29" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb65-30"><a href="#cb65-30" aria-hidden="true" tabindex="-1"></a>vor1 <span class="ot">=</span> <span class="fu">tm_shape</span>(voronoi) <span class="sc">+</span></span>
+<span id="cb65-31"><a href="#cb65-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb65-32"><a href="#cb65-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(sites_ltm) <span class="sc">+</span></span>
+<span id="cb65-33"><a href="#cb65-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>()</span>
+<span id="cb65-34"><a href="#cb65-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-35"><a href="#cb65-35" aria-hidden="true" tabindex="-1"></a><span class="co"># METHOD 2</span></span>
+<span id="cb65-36"><a href="#cb65-36" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("deldir")</span></span>
+<span id="cb65-37"><a href="#cb65-37" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("dismo")</span></span>
+<span id="cb65-38"><a href="#cb65-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-39"><a href="#cb65-39" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dismo)</span>
+<span id="cb65-40"><a href="#cb65-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-41"><a href="#cb65-41" aria-hidden="true" tabindex="-1"></a>voronoi_int <span class="ot">=</span> <span class="fu">voronoi</span>(<span class="fu">st_coordinates</span>(sites_ltm),<span class="at">ext =</span> bbox)</span>
+<span id="cb65-42"><a href="#cb65-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-43"><a href="#cb65-43" aria-hidden="true" tabindex="-1"></a>voronoi_int <span class="ot">=</span> <span class="fu">st_as_sf</span>(voronoi_int) <span class="sc">%&gt;%</span> <span class="fu">st_set_crs</span>(<span class="fu">st_crs</span>(sites_ltm))</span>
+<span id="cb65-44"><a href="#cb65-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-45"><a href="#cb65-45" aria-hidden="true" tabindex="-1"></a>voronoi_int <span class="ot">=</span> voronoi_int <span class="sc">%&gt;%</span>  <span class="fu">st_intersection</span>(bbox_sfc)</span>
+<span id="cb65-46"><a href="#cb65-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-47"><a href="#cb65-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-48"><a href="#cb65-48" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb65-49"><a href="#cb65-49" aria-hidden="true" tabindex="-1"></a>vor2 <span class="ot">=</span> <span class="fu">tm_shape</span>(voronoi_int) <span class="sc">+</span></span>
+<span id="cb65-50"><a href="#cb65-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb65-51"><a href="#cb65-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(sites_ltm) <span class="sc">+</span></span>
+<span id="cb65-52"><a href="#cb65-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>()</span>
+<span id="cb65-53"><a href="#cb65-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-54"><a href="#cb65-54" aria-hidden="true" tabindex="-1"></a><span class="co"># plot polygons obtained from two methods</span></span>
+<span id="cb65-55"><a href="#cb65-55" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(vor1, vor2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lesson-2_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<p><a href="https://r-spatial.github.io/sf/articles/sf1.html">sf package website with articles 1-6</a></p>
+<p><a href="https://ourcodingclub.github.io/tutorials/spatial-vector-sf/">Our Coding Cub Tutorials - Geospatial vector data in R and sf</a></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

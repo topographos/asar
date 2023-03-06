@@ -16,7 +16,7 @@ execute:
 theme: cosmo
 ---
 
-Learning Objectives
+## Learning Objectives
 
 -   learn about simple feature package
 
@@ -28,14 +28,19 @@ Learning Objectives
 
 ## Introduction
 
+This lesson introduce basics of working with vector data in R.
+
 ## Background Reading
+
+Please read and work through the code in the following chapters:
 
 -   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.2, 2.4, 3.2, 4.2 and 5.2 - [link](https://r.geocompx.org/)
 
 ## Packages
 
-```{r}
+Start with loading R packages that we will use in our class.
 
+```{r}
 
 library(sf) # vector representation
 library(dplyr) # data manipulation
@@ -76,19 +81,22 @@ There are three hierarchical classes in sf package:
 
 ![Source (https://r-spatial.github.io/sf/articles/sf1.html) NOTE: update the image](https://r-spatial.github.io/sf/articles/sf_xfig.png)
 
-In addition sf object can store information on dimension, bounding box and coordinate reference system.
+In addition, sf object can store information on dimension, bounding box and coordinate reference system.
 
 Now, we are going to construct a sf classes from scratch
 
-First, create a data frame with sites, from lesson - 0.
+First, create a data frame with sites ( from lesson - 0).
 
 ```{r}
 
 # a collection of same lenth vectors
+#site ids
 site_id = c("THS_1_0_0", "THS_2_0_0", "THS_3_0_0")
 
+# period of site
 period =  c("Iron Age", "Iron Age", "Bronze Age")
 
+# site size in hectars
 size_ha = c(18.0, 5.6, 7.2)
 
 # construct df
@@ -97,19 +105,19 @@ sites <-  data.frame(site_id, size_ha, period)
 
 ```
 
-Now we will construct and add geometry attributes for our sites.
+In next step we will construct and add geometry attributes for our sites.
 
 ```{r}
 
 # function st_point() creates a single point from numeric vectors
-# we need three point for each site record
+# we need three points for each site record
 p1 = st_point(c(5,2))
 
 p2 = st_point(c(3,3))
 
 p3 = st_point(c(1,6))
 
-# function st_sfc() create a column
+# function st_sfc() creates a column
 points_sfc = st_sfc(p1,p2,p3)
 
 
@@ -117,10 +125,12 @@ points_sfc = st_sfc(p1,p2,p3)
 sites_sf = st_sf(sites, geometry = points_sfc)
 
 # plot
-plot(sites_sf$geometry)
-
-# print
-print(sites_sf)
+# plot(sites_sf$geometry)
+# print(sites_sf)
+# or using tmap
+tm_shape(sites_sf) +
+  tm_symbols(col = "salmon") +
+  tm_grid()
 
 ```
 
@@ -129,7 +139,7 @@ A very common task is to convert a table (e.g. in csv format) that contains colu
 ```{r}
 
 # import the csv
-tbs_sites = read.csv("data/tbs_sites.csv")
+tbs_sites = read.csv("../data/tbs_sites.csv")
 
 # check structure
 str(tbs_sites)
@@ -137,13 +147,13 @@ str(tbs_sites)
 # check first entries
 head(tbs_sites, n = 1)
 
-# check external software used by sf
-sf::sf_extSoftVersion()
+# a useful command to check external software used by sf
+# sf::sf_extSoftVersion()
 ```
 
 Before continuing we will learn about Coordinate Reference System (CRS) of our data.
 
-It could be either geographic or projected. We can create a crs object it by passing an EPSG code to `st_crs()` function.
+It could be either geographic or projected. We can create a `crs` object it by passing an EPSG code to `st_crs()` function.
 
 EPSG stand for European Petroleum Survey Group responsible for maintaining a database of coordinate systems.
 
@@ -178,7 +188,7 @@ Now we can create simple feature object.
 # specify column names with x an y
 # specify CRS
 
-tbs_sites_sf = st_as_sf(sites, coords = c("longitude", "latitude"), crs = 4326)
+tbs_sites_sf = st_as_sf(tbs_sites, coords = c("longitude", "latitude"), crs = 4326)
 
 plot(tbs_sites_sf$geometry)
 
@@ -208,7 +218,12 @@ tbs_sites_sf
 
 # plot the geometry
 
-plot(tbs_sites_sf$geom)
+# plot(tbs_sites_sf$geom)
+
+# or plot with tmap and add grid to see grid reference values in metres
+tm_shape(tbs_sites_sf) +
+  tm_symbols() +
+  tm_grid()
 
 ```
 
@@ -216,17 +231,15 @@ Now we can save our feature as in spatial format
 
 ```{r}
 # save to geopackage
+st_write(tbs_sites_sf, "../data/vect/data.gpkg", layer = "tbs_sites", delete_layer = TRUE)
 
-st_write(tbs_sites_sf, "data/data.gpkg", layer = "tbs_sites", delete_layer = TRUE)
-
-# have a look at content
-
-st_layers("data/data.gpkg",do_count = TRUE)
+# have a look at content to see the layer
+st_layers("../data/vect/data.gpkg",do_count = TRUE)
 ```
 
 ## Attribute operations
 
-Vector attribute store non-spatial information about feature e.g. site type, size or height.
+Vector attributes store non-spatial information about feature such as site type, size or height.
 
 Therefore, many operation that we perform on data frames can be also applied to sf features.
 
@@ -238,22 +251,19 @@ Let's start with data
 
 rm(list = ls())
 
-# look up layers
-st_layers("data/data.gpkg")
-
-
 # read sites
-sites = st_read("data/data.gpkg", layer = "tbs_sites")
+sites = st_read("../data/vect/data.gpkg", layer = "sites_point", quiet = TRUE)
 
 # glimpse
-glimpse(sites)
+head(sites, n = 3)
 
 
 ```
 
-Selecting columns
+### Selecting columns
 
 ```{r}
+
 # r base
 sites[,c("id","size_ha","period")]
 
@@ -262,9 +272,19 @@ sites[,c("id","size_ha","period")]
 select(sites, id, size_ha, period)
 
 # did you notice that geom column ist "sticky"?
+# check function st_drop_geometry()
+
 ```
 
-Selecting rows
+::: {.callout-tip appearance="simple"}
+When selecting columns from `sf` objects the geometry column is added automatically.
+
+Using function st_geometry() we can remove the geometry and return data.frame.
+
+    st_geometry(df) <- NULL 
+:::
+
+### Selecting rows
 
 ```{r}
 # r base
@@ -276,24 +296,24 @@ filter(sites, period == "Late Bronze Age")
 
 ```
 
-Pipe
+### Pipe
 
 The pipe operator ( `%>%` from dplyr or `I>` from base R) takes the output from a previous code and pass it as a first argument to next function
 
 ```{r}
 
-sites_lba = sites 
-  filter(period == "Late Bronze Age") %>% 
-  select(id, size_ha, period)
+sites_lba = sites %>% # start with your data
+  filter(period == "Late Bronze Age") %>% # select ros from LBA
+  select(id, size_ha, period) # select only 3 columns
   
 
 ```
 
 ::: callout-tip
-`%>%` vs `I>` - [The new R pipe \| R-bloggers](https://www.r-bloggers.com/2021/05/the-new-r-pipe/)
+Here you can reas about dplyr pipe`%>%` vs base pipe `I>` - [The new R pipe \| R-bloggers](https://www.r-bloggers.com/2021/05/the-new-r-pipe/)
 :::
 
-Aggregating attributes
+### Aggregating attributes
 
 ```{r}
 
@@ -307,7 +327,7 @@ sites %>%
     total_area = sum(size_ha)
   )
 
-# is it sticky ?
+# is it sticky ? remember st_drop_geometry()?
 sites %>% 
   group_by(period) %>% 
   summarise(
@@ -318,24 +338,27 @@ sites %>%
 
 ```
 
-## Spatial operations
+::: {.callout-tip appearance="simple"}
+We have just applied the *split-combine-apply* paradigm to our data. Please consult this [link](https://carpentries-incubator.github.io/R-archaeology-lesson/03-dplyr.html#Split-apply-combine_data_analysis_and_the_summarize()_function) to read about it in more detail.
+:::
 
-For next part of the lesson we will create a grid with squares 2500m x 2500m (6.25km\^2)
+## Spatial operation
+
+For next part of the lesson we will create a grid with squares 2500m x 2500m (6.25km\^2).
 
 ```{r}
 
 # tessellation is create using st_make_grid funtion
 grid_sfc = st_make_grid(sites, cellsize = 2500)
 
-
 # this makes a sfc_POLYGON so we are going to convert it to sf 
-grid_sf = st_sf(tbs_grid_sfc)
+grid_sf = st_sf(grid_sfc)
 
 # change column name
 st_geometry(grid_sf) <- "geom"
 
 # add unique id to grid
-grid_sf$grid_id = 1:nrow(tbs_grid_sf)
+grid_sf$grid_id = 1:nrow(grid_sf)
 
 
 ```
@@ -351,7 +374,7 @@ tm_shape(sites) +
   tm_symbols(col="blue")
 ```
 
-Spatial subsetting
+### **Spatial subsetting**
 
 Subset one object based on its relation in space to another object.
 
@@ -366,9 +389,9 @@ tm_shape(grid_with_sites1) +
 
 ```
 
-the command x\[y,\] subsets fetures of target x using features of source y.
+the command x\[y,\] subsets features of target x using features of source y.
 
-By default it is using "*intersects*" topological relation.
+By default it is using *intersects* topological relation.
 
 However, sf provides many more ways to establish relation between pairs of geometry sets.
 
@@ -400,7 +423,7 @@ They are called geometry binary predicates.
 
 -   `st_is_within_distance()`
 
-Let's go back to our previous example. We will use a topological operator `st_interesects()` to return sgbp object (sparse geometry binary operator). Then we will create a logical vector (TRUE if features intersect and FALSE if they don't) to subset the grid.
+Let's go back to our previous example. We will use a topological operator `st_interesects()` to return `sgbp` object (sparse geometry binary operator). Then we will create a logical vector (TRUE if features intersect and FALSE if they don't) to subset the grid.
 
 ( <https://r.geocompx.org/spatial-operations.html#spatial-subsetting>)
 
@@ -408,10 +431,13 @@ Let's go back to our previous example. We will use a topological operator `st_in
 # we will use topological operator 
 sel_sgbp = st_intersects(x = grid_sf, y = sites)
 
+# have a look at sparse geometry binary predicate 
 sel_sgbp
 
+# create a logical vector
 sel_logical = lengths(sel_sgbp) > 0
 
+# use logical vector to subset grids with sites
 grid_with_sites2 = grid_sf[sel_logical,]
 
 # plot
@@ -437,6 +463,8 @@ tm_shape(grid_with_sites3) +
 
 Point in Polygon
 
+In the next task we want to count number of sites per grid.
+
 Method 1 - using sparse geometry binary operator
 
 ```{r}
@@ -456,11 +484,11 @@ tm_shape(grid_sf[grid_sf$sites_count > 0,]) +
 
 ```
 
-Method 2 - using spatial join
+Method 2 - using spatial join we have more flexibility as we can use `split-combine-apply` to produce additional statistics such as sum of sites areas.
 
 ```{r}
 
-# make a spatial joine
+# make a spatial join
 grid_join = st_join(grid_sf, sites)
 
 # summarize the join by grid id
@@ -473,11 +501,11 @@ grid_sum = grid_join %>%
   filter(!is.na(total_area)) # deal with NA values
 
 # have a look
-grid_sum
+head(grid_sum)
 
 ```
 
-Plot the last example
+Plot using tmap `view` mode.
 
 ```{r}
 # interactive mode
@@ -496,7 +524,7 @@ tm_shape(grid_sum) +
 
 ## Geometry operations
 
-Data
+Let's start with clearing environment and reading only the sites again.
 
 ```{r}
 
@@ -504,8 +532,7 @@ Data
 rm(list = ls())
 
 # load sites again
-
-sites = st_read("data/data.gpkg", layer = "tbs_sites")
+sites = st_read("../data/vect/data.gpkg", layer = "sites_point", quiet = TRUE)
 
 
 ```
@@ -515,11 +542,12 @@ Buffer
 ```{r}
 
 # filter sites
-
 sites_ltm = sites[sites$period == "Late Third Millennium",]
 
+# apply buffer to selected sites
 sites_buff_2km = st_buffer(sites_ltm, dist = 2000)
 
+# quick map
 plot(sites_buff_2km$geom)
 
 
@@ -553,25 +581,34 @@ agri_area$area = units::set_units(st_area(agri_area), km^2)
 
 ## Saving Data
 
-geopackage
+Write the agricultural potential areas to geopackage.
 
 ```{r}
 
-write_sf(agri_area, "data/data.gpkg", layer = "agri_area_ltm", delete_layer = TRUE)
+write_sf(agri_area, "../data/vect/data.gpkg", layer = "agri_area_ltm", 
+         delete_layer = TRUE)
 
 ```
 
-shapefile
+or shapefile
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 
-write_sf(agri_area, "data/agri_area_ltm.shp")
+write_sf(agri_area, "../data/vect/agri_area_ltm.shp")
 
 ```
 
-## Voronoi
+## Voronoi Polygons
 
-Voronoi Polygons
+Voronoi or Thiessen polygons are popular theoretical boundary models.
+
+The border is drawn where the distance between two points is equal.
+
+Below are two methods to compute the polygons in R.
+
+Please execute the below code. Try to do it line by line to inspect the code and result.
+
+Use help to learn about each
 
 ```{r}
 
@@ -580,13 +617,12 @@ Voronoi Polygons
 rm(list = ls())
 
 # sites
-sites = st_read("data/data.gpkg", layer = "tbs_sites")
+sites = st_read("../data/vect/data.gpkg", layer = "sites_point", quiet = TRUE)
 
 # sites ltm
 sites_ltm = sites[sites$period == "Late Third Millennium",]
 
 # bbox of all sits
-
 bbox = st_bbox(sites)
 
 bbox_sfc = st_as_sfc(bbox)
@@ -603,16 +639,14 @@ voronoi <- sites_ltm %>%  # consider the master points
   st_join(sites) %>% # & re-connect the data items
   st_intersection(bbox_sfc) # limit to bounding box boundaries
 
-# plot
-# mode
-
+# plot mode
 tmap_mode("plot")
-tm_shape(voronoi) +
+vor1 = tm_shape(voronoi) +
   tm_borders() +
-tm_shape(sites_ltm) +
-  tm_dots()
+  tm_shape(sites_ltm) +
+  tm_symbols()
 
-# method 2
+# METHOD 2
 # install.packages("deldir")
 # install.packages("dismo")
 
@@ -626,8 +660,18 @@ voronoi_int = voronoi_int %>%  st_intersection(bbox_sfc)
 
 
 # plot
-tm_shape(voronoi_int) +
+vor2 = tm_shape(voronoi_int) +
   tm_borders() +
   tm_shape(sites_ltm) +
   tm_symbols()
+
+# plot polygons obtained from two methods
+tmap_arrange(vor1, vor2)
+
 ```
+
+## Resources
+
+[sf package website with articles 1-6](https://r-spatial.github.io/sf/articles/sf1.html)
+
+[Our Coding Cub Tutorials - Geospatial vector data in R and sf](https://ourcodingclub.github.io/tutorials/spatial-vector-sf/)

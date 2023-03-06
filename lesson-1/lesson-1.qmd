@@ -16,7 +16,7 @@ execute:
 theme: cosmo
 ---
 
-Learning Objectives
+## Learning Objectives
 
 -   learn about R-spatial ecosystem
 
@@ -31,6 +31,8 @@ The objective of this lesson is to read and plot spatial data in R.
 You will also become familiar with syntax variety of packages used for mapping.
 
 ## Background Reading
+
+Please read and work through the code in the following chapters:
 
 -   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 1,2 and 9 - [link](https://r.geocompx.org/)
 
@@ -183,11 +185,7 @@ plot(st_geometry(rivers), col = "#80c5de")
 
 ```{r}
 #read
-geology = st_read("../data/vect/data.gpkg", layer = "geology")
-
-raster
-# glimpse
-# head(geology, n = 3)
+geology = st_read("../data/vect/data.gpkg", layer = "geology", quiet = TRUE)
 
 #plot
 plot(geology[,"SEDIMENTS"], key.width = lcm(6), key.pos = 4, pal = hcl.colors(4, "Roma"))
@@ -261,7 +259,7 @@ plotRGB(landsat, r = "band_4", g = "band_3", b = "band_2", stretch = "lin")
 
 ## Mapping
 
-#### Data
+#### data
 
 Load and tidy data for mapping
 
@@ -470,3 +468,11 @@ advanced plot
 
 1.  Go back to your tmap basic map and develop the code further.
 2.  Use the code in advanced example and Chapter 9 from *Geocomputation with R.*
+
+## Resources
+
+[mapsf R package](https://riatelab.github.io/mapsf/)
+
+[tmap R package](https://cran.r-project.org/web/packages/tmap/)
+
+[Elegant and informative maps with tmap](https://r-tmap.github.io/tmap-book/)
