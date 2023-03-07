@@ -30,15 +30,13 @@ theme: cosmo
 
 Raster data hold information within a cell. The information can be numeric or categorical. We can combine into one raster object multiple layers to hold multiple levels of information. For example, each layer representing different time of the same area. If the layers contains spectral information they are called bands. Each bands represent a different wavelength range of electromagnetic spectrum.
 
-Terrain Characteristics
-
-Terrain Characteritsits are calculated from digital elelvation model and may include slope, aspect, topographic position index or landforms. We will be intresded in TPI (Topographic Postion Index). is a diffrence between the elevation of a cell and the mean height of surrounding cells. values above 0 indicates locations higher than average. values around 0 indicates flat locations. values below 0 indicates locations lower than average.
+Terrain Characteristics are calculated from digital elevation model and may include slope, aspect, topographic position index or landforms. We are interested inTopographic Position Index (TPI). TPI is a difference between the elevation of a cell and the mean height of surrounding cells. values above 0 indicates locations higher than average. values around 0 indicates flat locations. values below 0 indicates locations lower than average.
 
 NDVI Different objects return different amount of energy in different wavelenghts of the electromagnetic spectrum. Normalized Difference Vegetation Index describes density and health of vegetation. It is a ratio between Red and Near Infrared reluctance. The values range between -1 and 1, where water having negative values, bare soil close to 0 dry vegetation low values and health vegetation high values approaching 1.
 
 ## Background Reading
 
--   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.3,3.3, 4.3 and 5.2 - [link](https://r.geocompx.org/)
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.3,3.3, 4.3 , 5.3 and 10 - [link](https://r.geocompx.org/)
 
 ## Packages
 
@@ -46,8 +44,10 @@ NDVI Different objects return different amount of energy in different wavelenght
 # install.packages("RStoolbox)
 # load packages
 library(terra) # raster 
+library(sf) # vector
+library(dplyr) # data manipulation
 library(tmap) # mapping
-library(RStoolbox)
+library(RStoolbox) # remote sensing tools
 ```
 
 ## Raster Basic
@@ -123,34 +123,37 @@ hist(dem) # histogram
 
 ## Reprojecting
 
--   **crs()**
+It is important to get your data in the right coordinate system. In `terra` package you can a
 
--   **project()**
+-   **`crs()` -** get or set a coordinate reference system
+
+-   **`project() -`** change the coordinate reference system
 
 ```{r}
-
+# get the current crs of your data
 crs(dem, describe = TRUE)
 
+# change the coordinate system
 dem_WGS84 = project(dem, "EPSG:4326" )
 ```
 
 ## Map Algebra
 
--   local
+-   local - operations on one cell at time
 
--   focal
+-   focal  - operation on a neighborhood around cell
 
--   zonal
+-   zonal - operations within specified zone
 
--   global
+-   global - operations applied to all cells in a raster
 
 ### Local
 
 ```{r}
 
-
+# multiply cells values
 plot(dem * 100)
-
+# subsetting raster cells
 plot(dem >= 400)
 
 
@@ -166,12 +169,14 @@ m <- matrix(m, ncol=3, byrow = T)
 m
 ```
 
-`Paramerer right = TRUE`, the intervals are closed on the right (and open on the left), (300, 400\], closed means that second column of the matrix is inclusive.
+Paramater`right = TRUE`, the intervals are closed on the right (and open on the left), (300, 400\], closed means that second column of the matrix is inclusive.
 
 ```{r}
 
+# classify raster using matrix table m
 dem_reclass = classify(dem, m, right = TRUE )
 
+# plot
 tm_shape(dem_reclass) +
     tm_raster(style = "cat")
 
@@ -188,7 +193,7 @@ levels(dem_reclass) = data.frame(value = c(1, 2),
 cats(dem_reclass)
 
 # map
-tm_shape(ndvi_reclass) +
+tm_shape(dem_reclass) +
     tm_raster(palette = "-Greens")
 ```
 
@@ -199,16 +204,18 @@ tm_shape(ndvi_reclass) +
 # function focal
 dem_focal <- focal(dem, w=matrix(1,nrow=7,ncol=7), fun=mean)
 
+#plot
 tm_shape(dem_focal) +
     tm_raster()
 ```
 
-Contours
+A smoothed DEM can be used to extract contours. Function `as.contour` comes from `terra` package and returns object of class `SpatVector` that needs to be converted to sf class using `st_as_sf().`
 
 ```{r}
-
+# compute contours
 contours <- as.contour(dem_focal) %>% st_as_sf()
 
+# plot contours
 tm_shape(dem_focal) +
   tm_raster() +
   tm_shape(contours) +
@@ -225,6 +232,8 @@ tm_shape(dem_focal) +
 geology = st_read("../data/vect/data.gpkg", layer = "geology")
 
 # rasterize vector
+# rasterize is a terra function that accepts SpatVector and SpatRaster
+# function vect() converts sf into SpatVect
 geology.ras = rasterize(vect(geology), dem, "SEDIMENTS")
 
 # plot
@@ -244,17 +253,22 @@ zonal(dem,geology.ras, fun = "max")
 
 ### Global
 
-Distance
+Distance is one of the global operations. The function `distance()` compute distance for all cells in the raster to a target feature.
 
 ```{r}
 
+# read rivers as sf object
 rivers = st_read("../data/vect/data.gpkg", layer = "rimes_rivers", quiet = TRUE)
 
-rivers_vect = vect(rivers)
+# convert in SpatVector
+rivers.vect = vect(rivers)
 
-dist = distance(dem,rivers_vect)
+# compute distance raster
+dist.rast = distance(dem,rivers.vect)
 
-tm_shape(dist) +
+?distance
+# plot
+tm_shape(dist.rast) +
   tm_raster(style = "cont") +
   tm_shape(rivers) +
   tm_lines(col = "#80c5de")
@@ -267,31 +281,25 @@ tm_shape(dist) +
 # calculate terrain characteristics - creates multiple layers
 terrain_char <- terra::terrain(dem, c('slope', 'aspect', 'TPI', 'TRI'))
 
+# a multi-layer raster
 terrain_char
 
-tpi = terrain_char$TPI
-
-tpi
+# axtract tpi layer into 
+tpi.rast = terrain_char$TPI
 ```
 
 ## Spectral Indices
 
-Read in Landsat data.
+Read in Landsat data
 
 ```{r}
 
 # landsat bands
-# Blue
-blue <- rast("../data/rast/landsat_tbs/band_2.tif")
-
-# Green
-green <- rast("../data/rast/landsat_tbs/band_3.tif")
-
 # Red
 red <- rast("../data/rast/landsat_tbs/band_4.tif")
 
 # Near Infrared (NIR)
-near.infrared <- rast("../data/rastlandsat_tbs/band_5.tif")
+near.infrared <- rast("../data/rast/landsat_tbs/band_5.tif")
 
 ```
 
@@ -309,14 +317,16 @@ plot(ndvi)
 
 ```
 
-RStoolbox - a dedicated
+[RStoolbox](https://bleutner.github.io/RStoolbox/) is a R package dedicated to remote sensing analysis. It provides a function [`spectralIndices()`](https://bleutner.github.io/RStoolbox/rstbx-docu/spectralIndices.html) to compute a variety of spectral indices. The function returns a `RasterBrick` (old implementation of multi layered raster class) that we can convert to `terra` `SpatRaster`.
 
 ```{r}
 
 # stack
-landsat = c(blue,green,red,near.infrared)
+landsat = c(red,near.infrared)
 
-#compute indicses
+#compute indices: N
+# NDVI -  Normalised Difference Vegetation Index
+# MSAVI - Modified Soil Adjusted Vegetation Index
 indices = spectralIndices(landsat, red = "band_4", nir = "band_5", indices = c("NDVI","MSAVI"))
 
 # indices are returned in "old" raster format - convert to SpatRaster
@@ -329,10 +339,21 @@ plot(indices)
 
 ## GIS Bridge
 
+R allows for interaction with GIS software installed on your computer.
+
+It has benefit of processing large datasets using algorithms that are not implemented in R and building integrated data processing workflows.
+
+The book *Gecomputation in R* dedicates entire [Chater 10](https://r.geocompx.org/gis.html) to bridging R and GIS software such as QGIS, GRASS and GIS.
+
+Here we are going to work with a different suite of tools called [Whitebox Tools](https://www.whiteboxgeo.com/) that can be integrated within R using a frontend package [`whitebox.`](https://cran.r-project.org/web/packages/whitebox/index.html)
+
 ```{r}
 
+# 1: install r package
 # install.packages("whitebox")
+# 2: install whitebox tools
 # whitebox::install_whitebox()
+# 3: call in the whitebox R package
 library(whitebox)
 
 # check geomorphons
@@ -351,10 +372,10 @@ Map
 ```{r}
 
 # read raster file
-geomorphons = rast("../data/rast/geomorphons.tif")
+geom.raster = rast("../data/rast/geomorphons.tif")
 
 # plot
-tm_shape(geomorphons) +
+tm_shape(geom.raster) +
   tm_raster(style = "cat")
 
 ```
@@ -367,15 +388,18 @@ The writeRaster() function saves SpatRaster objects to files on disk.
 
 
 # distance
-terra::writeRaster()
+terra::writeRaster(dist.rast, "../data/rast/dist.rast.tif", overwrite=TRUE)
 
 # tpi
-terra::writeRaster()
+terra::writeRaster(tpi.rast, "../data/rast/tpi.rast.tif", overwrite=TRUE)
 
 # ndvi
-terra::writeRaster()
-
-# geomorphons
-terra::writeRaster(geomorph, )
+terra::writeRaster(ndvi, "../data/rast/ndvi.tif", overwrite=TRUE)
 
 ```
+
+## Resources
+
+[Spatial Data Science with R and 'terra'](https://rspatial.org/index.html)
+
+[Our Coding Club Tutorial - Rasters and Remote Sensing](https://ourcodingclub.github.io/tutorials/spatial/)
