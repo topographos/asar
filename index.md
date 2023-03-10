@@ -87,7 +87,7 @@ Readings
 
 The summative deadline for project delivery will be **12pm, Monday 24th April 2023**, via Turnitin.
 
-Link to project: (https://github.com/topographos/asar_project/)
+Link to project: [ASAR Project](https://github.com/topographos/asar_project/)
 
 ### Resources
 

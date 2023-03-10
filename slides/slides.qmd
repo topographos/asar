@@ -260,3 +260,29 @@ Whitebox <https://www.whiteboxgeo.com/>
 ![Geomorohons (Source:https://grass.osgeo.org/grass82/manuals/r.geomorphon.html)](https://grass.osgeo.org/grass82/manuals/legend.png)
 
 ## Coding Time ! - Lesson 3
+
+## Raster - Vector
+
+#### Learning Objectives
+
+-   learn about raster extraction
+
+-   visualize data using ggplot
+
+#### Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 6 - [link](https://r.geocompx.org/)
+
+## Grammar of Graphics
+
+![](https://ourcodingclub.github.io/assets/img/tutorials/datavis/DL_datavis1_layers.png)
+
+## Coding Time ! - Lesson 4
+
+## Assessment
+
+## [ASAR Project]((https://github.com/topographos/asar_project/) 
+
+(https://github.com/topographos/asar_project/)
+
+Q&A
