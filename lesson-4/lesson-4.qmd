@@ -1,0 +1,323 @@
+---
+title: "Archaeological Spatial Analysis in R"
+subtitle: "Lesson 4"
+author:
+  - name: Michal Michalski
+    email: michal.m.michalski@durham.ac.uk
+    affiliations: Durham University
+format: 
+  html:
+    code-fold: false
+    toc: true
+    code-overflow: wrap
+editor: visual
+execute: 
+  warning: false
+theme: cosmo
+---
+
+## Learning Objectives
+
+-   learn about raster extraction
+
+-   visualize data using ggplot
+
+## Introduction
+
+## Background Reading
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 6 - [link](https://r.geocompx.org/)
+
+## Packages
+
+```{r}
+
+library(sf) # vector
+library(terra) # raster
+library(tidyr) # tidy
+library(dplyr) # manipulate
+library(exactextractr) # raster extraction
+library(ggplot2) # graphs
+
+```
+
+## Raster Extraction
+
+### Data
+
+```{r}
+# VECTOR
+# archaeological sites
+sites= st_read("../data/vect/data.gpkg", layer = "sites_point")
+
+sites.pol= st_read("../data/vect/data.gpkg", layer = "sites_polygon")
+
+sites = sites[,c("id", "size_ha", "period")]
+
+head(sites)
+
+# buffer 1km around sites
+sites.buffer = sites %>% st_buffer(dist = 1000)
+
+# RASTER
+# enviromental covariates
+
+# 1: elevation model
+dem = rast("../data/rast/dem.tif")
+
+# 2: distance to water
+dist = rast("../data/rast/dist_raster.tif")
+
+names(dist) = "dist"
+
+# 3: geomorphons
+geomorph = rast("../data/rast/geomorphons.tif")
+
+# create categorical raster
+geomorph = as.factor(geomorph)
+
+levels(geomorph) = data.frame(value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), 
+                              landform = c("flat", "peak", "ridge","shoulder", "spur", "slope", "hollow", "footslope", "valley", "pit"))
+
+cats(geomorph)
+
+# you may want to write
+
+# writeRaster(geomorph, "data/geomorph_cat.tif")
+
+# 4: tpi
+tpi = rast("../data/rast/tpi_raster.tif")
+
+names(tpi) = "tpi"
+
+# 5: ndvi
+ndvi = rast("../data/rast/ndvi_raster.tif")
+
+names(ndvi) = "ndvi"
+
+
+```
+
+### Point Extraction
+
+```{r}
+
+# single
+heights = terra::extract(x = dem, y = vect(sites), ID = FALSE)
+
+# returns data frame
+head(heights)
+
+# bind column to sites
+sites_dem = cbind(sites,heights)
+
+head(sites)
+
+# multiple
+covariates = c(dist,geomorph,tpi)
+
+covariates
+
+# extract
+sites_cov =  terra::extract(x = covariates, y = vect(sites), ID = FALSE)
+
+sites_cov = cbind(sites,sites_cov)
+
+head(sites_cov)
+
+
+```
+
+### Polygon Extraction
+
+Continuous Data
+
+```{r}
+
+# extract ndvi value - method 1
+sites_ndvi_raw = terra::extract(ndvi, vect(sites.buffer))
+
+head(sites_ndvi_raw)
+
+# tidy up 
+sites_ndvi_clean = sites_ndvi_raw %>% tidyr::drop_na()
+
+# add unique ID
+sites.buffer$ID = 1:nrow(sites.buffer)
+
+# join
+sites_ndvi = dplyr::left_join(sites.buffer,sites_ndvi_clean)
+
+# do stats filter out bottom 5% and top 5%
+sites_ndvi_stats = sites_ndvi %>% 
+  st_drop_geometry() %>% 
+  group_by(ID) %>% 
+  filter(between(ndvi, quantile(ndvi, 0.05), quantile(ndvi, 0.95))) %>% 
+  summarise(min = min(ndvi),
+            mean = mean(ndvi),
+            max = max(ndvi),
+            sd = sd(ndvi))
+
+# join to buffer geometry
+sites_ndvi_stats = left_join(sites.buffer,sites_ndvi_stats)
+
+```
+
+```{r}
+# install.packages("exactextractr")
+# library(exactextractr)
+# extract ndvi value - method 2
+sites.buffer$ndvi_sum = exact_extract(ndvi, sites.buffer, 'sum', progress = TRUE)
+
+sites.buffer$ndvi_mean = exact_extract(ndvi, sites.buffer, 'mean', progress = TRUE)
+
+head(sites.buffer)
+
+```
+
+## Visualization
+
+Grammar of Graphics refers to elements of plot:
+
+-   data that are plotted
+
+-   aesthetics, mappings from data to attributes of plotted objects
+
+-   geometric objects types
+
+-   scale, range of values
+
+-   facets, groups of data
+
+::: {.callout-note appearance="simple"}
+The concept of Grammar and Graphics was introduced by Wilkinson and developed by Wickham
+
+https://vita.had.co.nz/papers/layered-grammar.htm
+:::
+
+### Histogram
+
+Histogram
+
+```{r}
+
+ggplot(sites_cov, aes(size_ha)) + geom_histogram()
+
+# facet by period
+ggplot(sites_cov, aes(size_ha)) + 
+  geom_histogram() +
+  facet_wrap(vars(period))
+```
+
+### Density Plot
+
+Density plot
+
+```{r}
+# density plot
+ggplot(sites_cov, aes(dist)) + geom_density()
+
+# color by period
+ggplot(sites_cov, aes(dist, color = period)) + 
+  geom_density(alpha = 0.5)
+
+```
+
+::: {.callout-tip appearance="simple"}
+[This site provides and excellent explanation of KDE](https://mathisonian.github.io/kde/)
+:::
+
+### Bar Chart
+
+```{r}
+
+# bar chart does the count for you
+ggplot(sites_cov, aes(period)) + geom_bar()
+
+# geomorhons by period
+ggplot(sites_cov, aes(landform)) + 
+  geom_bar() +
+  facet_wrap(vars(period))
+
+```
+
+### Scatter Plot
+
+```{r}
+
+ggplot(sites.pol, aes(max_elevation_mound_m,mounded_area_m_m )) + geom_point()
+
+
+# example in pipeline
+sites_ndvi_stats %>% 
+  filter(period == "Khabur") %>% 
+  ggplot() +
+  geom_point(aes(x = id, y = mean, size = sd))
+```
+
+### Box-plot
+
+```{r}
+
+# sites
+ggplot(sites_cov, aes(size_ha)) + geom_boxplot()
+
+# ndvi non aggregated values
+sites_ndvi %>% 
+  filter(period == "Khabur") %>% 
+  ggplot() +
+  geom_boxplot(aes(x = id, y = ndvi)) +
+  coord_flip()
+
+```
+
+### Complex Layouts
+
+Site-Size Histogram
+
+```{r}
+
+# data
+sites_ia = sites %>% filter(period == "Iron Age")
+
+# histogram
+(histogram = ggplot(data = sites_ia, mapping = aes(x = size_ha)) +
+  geom_histogram(binwidth = 1, boundary = 0, closed = "left", 
+                 fill = "#53868B", color = "white") +
+  geom_rug() +
+  geom_vline(aes(xintercept = median(size_ha)),                       
+             colour = "red", linetype = "dashed") +
+  scale_x_continuous(limits = c(0, 45), breaks = seq(0,max(floor(sites$size_ha)), by = 1)) +
+  labs(title = "TBS Survey - Iron Age",
+       subtitle = "Site-Size Histogram",
+       caption = "Source: Ur and Wilkinson 2008")+
+  ylab("Count\n") +                                                  
+  xlab("\n Site Size in Hectars") +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 8),
+    plot.margin = unit(c(1,1,1,1), units = , "cm")))
+
+```
+
+## Save Plot
+
+```{r}
+
+ggsave(histogram, file = "histogram.png", width = 10, height = 8, bg = 'white')
+
+```
+
+## Exercise
+
+We haven't plotted all variables, go back and visualize the remaining environmental characteristics.
+
+Please revisit your plots and consult the below resources to create compelling visualizations.
+
+## Resources
+
+[ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/)
+
+<https://ourcodingclub.github.io/tutorials/datavis/>
+
+<https://ourcodingclub.github.io/tutorials/data-vis-2/>

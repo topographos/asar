@@ -73,13 +73,24 @@ Readings
 
 -   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 2.3, 3.3, 4.3 and 5.3 - [link](https://r.geocompx.org/)
 
+**Friday 10th March**
+
+Lessons
+
+-   Lesson 4 - Raster - Vector Analysis - [link](https://topographos.github.io/asar/lesson-3/lesson-3.html)
+
+Readings
+
+-   Lovelace R, Nowosad K, Muenchow J, *Geocomputation with R,* Chapter 6 - [link](https://r.geocompx.org/)
+
 ### Assessment
 
 The summative deadline for project delivery will be **12pm, Monday 24th April 2023**, via Turnitin.
 
+Link to project: (https://github.com/topographos/asar_project/)
+
 ### Resources
 
- 
 [Geocomputation with R - book club](https://github.com/r4ds/bookclub-geocompr)
  
 [R for Data Science - book club ](https://github.com/r4ds/bookclub-r4ds)
