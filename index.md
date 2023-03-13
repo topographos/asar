@@ -77,7 +77,7 @@ Readings
 
 Lessons
 
--   Lesson 4 - Raster - Vector Analysis - [link](https://topographos.github.io/asar/lesson-3/lesson-3.html)
+-   Lesson 4 - Raster - Vector Analysis - [link](https://topographos.github.io/asar/lesson-4/lesson-4.html)
 
 Readings
 

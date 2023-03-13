@@ -276,6 +276,7 @@ Whitebox <https://www.whiteboxgeo.com/>
 ## Grammar of Graphics
 
 ![](https://ourcodingclub.github.io/assets/img/tutorials/datavis/DL_datavis1_layers.png)
+
 ## Literate Programming
 
 *'By coining the phrase “literate programming”, I am imposing a moral commitment on everyone who hears the term; surely nobody wants to admit writing an illiterate program'*
